@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khorkuto TV & Sports App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Slide Menu Drawer Overlay -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+
+  <!-- Slide Menu (Drawer) -->
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-logo">▶</div>
+      <h3>Khorkuto TV</h3>
+      <p>Version: 2.2</p>
+    </div>
+    <div class="drawer-menu-item">📡 Network Stream</div>
+    <div class="drawer-menu-item">📋 Playlists</div>
+    <div class="drawer-menu-item">📺 Floating Player</div>
+    <div class="drawer-menu-item">⚙️ Force Low Quality</div>
+    <div class="drawer-menu-item">🏏 Cricket Score</div>
+    <div class="drawer-menu-item">⚽ Football Score</div>
+    <div class="drawer-menu-item">✈️ Telegram</div>
+    <div class="drawer-menu-item">✉️ Contact US</div>
+    <div class="drawer-menu-item">🌐 Website</div>
+    <div class="drawer-menu-item">🔗 Share App</div>
+    <div class="drawer-menu-item">©️ Copyright</div>
+    <div class="drawer-menu-item exit" onclick="toggleDrawer()">➔ Exit</div>
+  </div>
+
+  <!-- Top Header -->
+  <div class="header">
+    <div class="header-left">
+      <button class="icon-btn" onclick="toggleDrawer()">☰</button>
+      <span class="header-title" id="pageTitle">Khorkuto TV</span>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn">★</button>
+      <button class="icon-btn" onclick="renderApp()">↻</button>
+      <button class="icon-btn">🔍</button>
+    </div>
+  </div>
+
+  <!-- PAGE 1: EVENTS -->
+  <div class="page active" id="page-events">
+    <div class="marquee-bar">
+      <marquee scrollamount="4">Khorkuto TV Sports: লাইভ খেলা দেখতে যেকোনো কার্ডের ওপর ক্লিক করুন!</marquee>
+    </div>
+
+    <!-- Sports Icons Carousel -->
+    <div class="sports-carousel" id="sportCategories"></div>
+
+    <!-- Filter Pills -->
+    <div class="filter-pills" id="statusPills"></div>
+
+    <!-- Live Event Cards Container -->
+    <div class="events-container" id="eventsList"></div>
+  </div>
+
+  <!-- PAGE 2: CATEGORIES -->
+  <div class="page" id="page-categories">
+    <div class="grid-container" id="categoriesGrid"></div>
+  </div>
+
+  <!-- PAGE 3: SPORTS CHANNELS -->
+  <div class="page" id="page-sports">
+    <div class="grid-container" id="sportsGrid"></div>
+  </div>
+
+  <!-- Video Stream Player Modal -->
+  <div class="player-modal" id="playerModal">
+    <div class="video-box">
+      <button class="close-player-btn" onclick="closePlayer()">✕ বন্ধ করুন</button>
+      <h4 id="channelTitle"></h4>
+      <video id="videoPlayer" controls autoplay>
+        <source src="" type="video/mp4">
+        আপনার ব্রাউজার স্ট্রিমিং সাপোর্ট করে না।
+      </video>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="switchPage('events', 'Khorkuto TV', this)">
+      <span style="font-size: 18px;">📡</span>
+      <span>Events</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('categories', 'Categories', this)">
+      <span style="font-size: 18px;">📺</span>
+      <span>Categories</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('sports', 'Sports Channels', this)">
+      <span style="font-size: 18px;">⚽</span>
+      <span>Sports</span>
+    </button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
