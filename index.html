@@ -1,474 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>HighFy TV - Live TV & Sports</title>
-  
-  <!-- App Meta -->
-  <meta name="description" content="HighFy TV - Premium Live TV & Sports Streaming App">
-  <meta name="theme-color" content="#0a0c14">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="apple-touch-icon" href="assets/logo.png">
-
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <!-- HLS.js Library -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-  <!-- Main Styles -->
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HighFy TV</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- FontAwesome for Crisp Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HLS.js for Streaming -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
-  <!-- Splash Screen / Loader -->
-  <div id="splash-screen" class="splash-screen">
-    <div class="splash-content">
-      <div class="logo-glow-wrapper">
-        <div class="logo-circle">
-          <i class="fa-solid fa-play"></i>
+    <!-- TOP COMPACT HEADER -->
+    <header class="app-header">
+        <div class="header-left">
+            <button class="icon-btn" id="openDrawerBtn" aria-label="Open Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <h1 class="app-logo"><span>⚡</span> HighFy TV</h1>
         </div>
-      </div>
-      <h1 class="app-brand-title">HighFy <span>TV</span></h1>
-      <p class="app-tagline" data-i18n="tagline">Premium Live TV & Sports</p>
-      <div class="spinner"></div>
+        <div class="header-right">
+            <button class="icon-btn" id="networkStreamHeaderBtn" title="Network Stream">
+                <i class="fa-solid fa-play-circle"></i>
+            </button>
+            <button class="icon-btn" id="headerFavBtn" title="Favorites">
+                <i class="fa-solid fa-star"></i>
+            </button>
+            <button class="icon-btn" id="refreshBtn" title="Refresh">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+            <button class="icon-btn" id="searchHeaderBtn" title="Search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- VERSION / ANNOUNCEMENT NOTIFICATION BAR -->
+    <div class="announcement-bar" id="announcementBar">
+        <span id="announcementText">HighFy TV Version 4.1 now available. Download the latest release!</span>
+        <i class="fa-solid fa-xmark close-announcement" id="closeAnnouncement"></i>
     </div>
-  </div>
 
-  <!-- Top Navigation Header -->
-  <header class="app-header">
-    <div class="header-left">
-      <button id="menu-btn" class="icon-btn" aria-label="Open Drawer Menu">
-        <i class="fa-solid fa-bars-staggered"></i>
-      </button>
-      <div class="brand-logo" id="home-brand-btn">
-        <i class="fa-solid fa-bolt brand-icon"></i>
-        <span class="brand-name">HighFy <span>TV</span></span>
-      </div>
-    </div>
-    <div class="header-right">
-      <button id="search-toggle-btn" class="icon-btn" aria-label="Search Channels">
-        <i class="fa-solid fa-magnifying-glass"></i>
-      </button>
-      <div class="live-status-pill">
-        <span class="pulse-dot"></span>
-        <span>LIVE</span>
-      </div>
-    </div>
-  </header>
+    <!-- MAIN CONTENT VIEW CONTAINER -->
+    <main class="main-content" id="mainContent">
 
-  <!-- Dynamic Search Bar Overlay -->
-  <div id="search-overlay" class="search-overlay hidden">
-    <div class="search-box">
-      <i class="fa-solid fa-magnifying-glass search-icon"></i>
-      <input type="text" id="search-input" placeholder="Search channels, sports, languages..." autocomplete="off">
-      <button id="search-clear-btn" class="icon-btn search-close"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-  </div>
-
-  <!-- Main Scrollable App Container -->
-  <main class="app-main-content">
-
-    <!-- VIEW 1: HOME & EVENTS -->
-    <section id="view-home" class="app-view active">
-      
-      <!-- Featured Hero Banner -->
-      <div class="featured-slider-container">
-        <div class="section-header">
-          <h2><i class="fa-solid fa-fire text-accent"></i> <span data-i18n="featured">Featured Events</span></h2>
-        </div>
-        <div id="featured-carousel" class="featured-carousel">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-
-      <!-- Recently Watched Section -->
-      <div id="recent-section" class="content-section hidden">
-        <div class="section-header">
-          <h2><i class="fa-solid fa-clock-rotate-left text-accent"></i> <span data-i18n="recentlyWatched">Recently Watched</span></h2>
-          <button id="clear-history-btn" class="text-btn" data-i18n="clear">Clear</button>
-        </div>
-        <div id="recent-channels-list" class="horizontal-card-scroll">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-
-      <!-- Live Sports Matches Section -->
-      <div class="content-section">
-        <div class="section-header">
-          <h2><i class="fa-solid fa-trophy text-accent"></i> <span data-i18n="liveNow">Live Matches & Events</span></h2>
-          <span class="badge badge-live" id="live-events-count">0 LIVE</span>
-        </div>
-        <div id="live-events-list" class="events-grid">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-
-      <!-- Popular Channels Section -->
-      <div class="content-section">
-        <div class="section-header">
-          <h2><i class="fa-solid fa-tv text-accent"></i> <span data-i18n="popularChannels">Popular Live Channels</span></h2>
-        </div>
-        <div id="home-channels-grid" class="channel-grid">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-
-    </section>
-
-    <!-- VIEW 2: SPORTS PAGE -->
-    <section id="view-sports" class="app-view">
-      <div class="sports-header">
-        <h2 data-i18n="sportsHub">Sports Hub</h2>
-        <p data-i18n="sportsSubtitle">Select a sport to filter live matches and streams</p>
-      </div>
-
-      <!-- Sports Category Chips -->
-      <div class="sports-chips-scroll" id="sports-filter-chips">
-        <!-- Dynamically rendered sport chips -->
-      </div>
-
-      <div class="content-section">
-        <div class="section-header">
-          <h3 id="sports-section-title"><i class="fa-solid fa-circle-play text-accent"></i> All Sports Events</h3>
-        </div>
-        <div id="sports-events-grid" class="events-grid">
-          <!-- Filtered sports events -->
-        </div>
-      </div>
-
-      <div class="content-section">
-        <div class="section-header">
-          <h3><i class="fa-solid fa-satellite-dish text-accent"></i> Sports Channels</h3>
-        </div>
-        <div id="sports-channels-grid" class="channel-grid">
-          <!-- Filtered sports channels -->
-        </div>
-      </div>
-    </section>
-
-    <!-- VIEW 3: CATEGORIES PAGE -->
-    <section id="view-categories" class="app-view">
-      <div class="section-header">
-        <h2><i class="fa-solid fa-border-all text-accent"></i> <span data-i18n="allCategories">Explore Categories</span></h2>
-      </div>
-
-      <!-- Categories Grid -->
-      <div id="categories-grid" class="category-grid">
-        <!-- Dynamically populated category cards -->
-      </div>
-
-      <!-- Filtered Channels Title Container -->
-      <div id="category-channels-wrapper" class="category-channels-wrapper hidden">
-        <div class="section-header">
-          <h3 id="selected-category-title">Selected Category</h3>
-          <button id="reset-category-filter" class="text-btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
-        </div>
-        <div id="category-filtered-channels" class="channel-grid">
-          <!-- Dynamic channels -->
-        </div>
-      </div>
-    </section>
-
-    <!-- VIEW 4: FAVORITES PAGE -->
-    <section id="view-favorites" class="app-view">
-      <div class="section-header">
-        <h2><i class="fa-solid fa-star text-accent"></i> <span data-i18n="myFavorites">My Favorites</span></h2>
-        <button id="clear-favs-btn" class="text-btn" data-i18n="clearAll">Clear All</button>
-      </div>
-      <div id="favorites-grid" class="channel-grid">
-        <!-- Dynamically populated favorites -->
-      </div>
-      <div id="favorites-empty" class="empty-state hidden">
-        <i class="fa-regular fa-star empty-icon"></i>
-        <h3 data-i18n="noFavoritesTitle">No Favorites Saved</h3>
-        <p data-i18n="noFavoritesDesc">Tap the star icon on any channel card or player to save it here.</p>
-      </div>
-    </section>
-
-    <!-- VIEW 5: SETTINGS PAGE -->
-    <section id="view-settings" class="app-view">
-      <div class="section-header">
-        <h2><i class="fa-solid fa-gear text-accent"></i> <span data-i18n="settings">Settings</span></h2>
-      </div>
-
-      <div class="settings-card-group">
-        <div class="settings-item">
-          <div class="settings-info">
-            <i class="fa-solid fa-language settings-icon"></i>
-            <div>
-              <span class="settings-title" data-i18n="language">App Language</span>
-              <span class="settings-desc">Choose primary display language</span>
+        <!-- 1. EVENTS VIEW (HOME) -->
+        <section class="view-screen active" id="eventsView">
+            <!-- Sport Shortcuts Row -->
+            <div class="sports-shortcuts-wrapper">
+                <div class="sports-shortcuts" id="sportsShortcuts">
+                    <button class="shortcut-btn active" data-sport="all">
+                        <div class="shortcut-icon"><i class="fa-solid fa-border-all"></i></div>
+                        <span>All</span>
+                    </button>
+                    <button class="shortcut-btn" data-sport="cricket">
+                        <div class="shortcut-icon"><i class="fa-solid fa-baseball-bat-ball"></i></div>
+                        <span>Cricket</span>
+                    </button>
+                    <button class="shortcut-btn" data-sport="wwe">
+                        <div class="shortcut-icon"><i class="fa-solid fa-hand-fist"></i></div>
+                        <span>WWE</span>
+                    </button>
+                    <button class="shortcut-btn" data-sport="fifa">
+                        <div class="shortcut-icon"><i class="fa-solid fa-trophy"></i></div>
+                        <span>FIFA Cup</span>
+                    </button>
+                    <button class="shortcut-btn" data-sport="football">
+                        <div class="shortcut-icon"><i class="fa-solid fa-futbol"></i></div>
+                        <span>Football</span>
+                    </button>
+                </div>
             </div>
-          </div>
-          <select id="setting-language-select" class="settings-control-select">
-            <option value="en">English</option>
-            <option value="bn">বাংলা (Bangla)</option>
-          </select>
-        </div>
 
-        <div class="settings-item">
-          <div class="settings-info">
-            <i class="fa-solid fa-gauge-high settings-icon"></i>
-            <div>
-              <span class="settings-title" data-i18n="forceLowQuality">Force Low Quality</span>
-              <span class="settings-desc">Optimizes buffering on low speed networks</span>
+            <!-- Event Status Filter Pills -->
+            <div class="filter-pills-row">
+                <button class="pill-btn active" data-filter="all">All (<span id="cntAll">0</span>)</button>
+                <button class="pill-btn" data-filter="live">Live (<span id="cntLive">0</span>)</button>
+                <button class="pill-btn" data-filter="upcoming">Upcoming (<span id="cntUpcoming">0</span>)</button>
+                <button class="pill-btn" data-filter="finished">Finished (<span id="cntFinished">0</span>)</button>
             </div>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="setting-force-low">
-            <span class="slider round"></span>
-          </label>
-        </div>
 
-        <div class="settings-item">
-          <div class="settings-info">
-            <i class="fa-solid fa-play settings-icon"></i>
-            <div>
-              <span class="settings-title" data-i18n="autoplay">Autoplay Stream</span>
-              <span class="settings-desc">Start playback instantly when opening channel</span>
+            <!-- Event Match Cards Feed -->
+            <div class="events-feed" id="eventsFeed">
+                <!-- Dynamically populated from events.json -->
             </div>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="setting-autoplay" checked>
-            <span class="slider round"></span>
-          </label>
-        </div>
+        </section>
 
-        <div class="settings-item action-item" id="btn-clear-cache">
-          <div class="settings-info">
-            <i class="fa-solid fa-trash-can settings-icon danger"></i>
-            <div>
-              <span class="settings-title danger-text" data-i18n="clearAppCache">Clear App Cache & Storage</span>
-              <span class="settings-desc">Resets saved preferences, history, and favorites</span>
+        <!-- 2. SPORTS VIEW -->
+        <section class="view-screen" id="sportsView">
+            <div class="section-title-bar">
+                <h2>Sports Channels</h2>
             </div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-muted"></i>
-        </div>
-      </div>
-
-      <!-- About Section -->
-      <div class="section-header" style="margin-top: 24px;">
-        <h2><i class="fa-solid fa-circle-info text-accent"></i> <span data-i18n="aboutApp">About HighFy TV</span></h2>
-      </div>
-      <div class="settings-card-group">
-        <div class="settings-item">
-          <span class="settings-title" data-i18n="version">Application Version</span>
-          <span class="settings-value" id="app-version-label">1.0.0</span>
-        </div>
-        <div class="settings-item">
-          <span class="settings-title" data-i18n="platform">Platform Mode</span>
-          <span class="settings-value" id="platform-type-label">Web Standard</span>
-        </div>
-        <div class="settings-item action-item" id="btn-open-telegram">
-          <div class="settings-info">
-            <i class="fa-brands fa-telegram settings-icon telegram-blue"></i>
-            <div>
-              <span class="settings-title">Official Telegram Channel</span>
-              <span class="settings-desc">Get live stream updates and match links</span>
+            <div class="grid-3col" id="sportsGrid">
+                <!-- Dynamically populated from channels.json (Sports category) -->
             </div>
-          </div>
-          <i class="fa-solid fa-arrow-up-right-from-square text-muted"></i>
+        </section>
+
+        <!-- 3. CATEGORIES VIEW -->
+        <section class="view-screen" id="categoriesView">
+            <div class="section-title-bar">
+                <h2>Categories</h2>
+            </div>
+            <div class="grid-3col" id="categoriesGrid">
+                <!-- Dynamically populated from categories.json -->
+            </div>
+        </section>
+
+        <!-- 4. CATEGORY CHANNEL LIST DRILL-DOWN VIEW -->
+        <section class="view-screen" id="categoryChannelsView">
+            <div class="category-header-bar">
+                <button class="back-link-btn" id="backToCategoriesBtn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h2 id="categoryTitle">Category Name</h2>
+            </div>
+            <div class="grid-3col" id="categoryChannelsGrid">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- 5. FAVORITES VIEW -->
+        <section class="view-screen" id="favoritesView">
+            <div class="section-title-bar">
+                <h2>Favorite Channels</h2>
+            </div>
+            <div class="grid-3col" id="favoritesGrid">
+                <!-- Dynamically populated from LocalStorage -->
+            </div>
+        </section>
+
+        <!-- 6. NETWORK STREAM PAGE -->
+        <section class="view-screen" id="networkStreamView">
+            <div class="section-title-bar">
+                <h2>Network Stream</h2>
+            </div>
+            <div class="form-container">
+                <p>Enter an M3U8 or HLS live stream video URL:</p>
+                <input type="text" id="streamUrlInput" placeholder="https://example.com/live/stream.m3u8" class="custom-input">
+                <button id="playNetworkStreamBtn" class="action-btn">
+                    <i class="fa-solid fa-play"></i> Play Stream
+                </button>
+            </div>
+        </section>
+
+        <!-- 7. PLAYLISTS PAGE -->
+        <section class="view-screen" id="playlistsView">
+            <div class="section-title-bar">
+                <h2>M3U Playlists</h2>
+            </div>
+            <div class="form-container">
+                <input type="text" id="playlistUrlInput" placeholder="Paste M3U Playlist URL" class="custom-input">
+                <button id="loadPlaylistBtn" class="action-btn"><i class="fa-solid fa-cloud-arrow-down"></i> Load Playlist</button>
+                <div id="playlistStatus" class="info-box">No external playlist loaded.</div>
+            </div>
+        </section>
+
+        <!-- 8. SCORES & SETTINGS PAGES -->
+        <section class="view-screen" id="scoreView">
+            <div class="section-title-bar">
+                <h2 id="scoreTitle">Sports Score</h2>
+            </div>
+            <div class="info-box" id="scoreContent">
+                API integration ready. Live score data feeds will load here.
+            </div>
+        </section>
+
+        <section class="view-screen" id="settingsView">
+            <div class="section-title-bar">
+                <h2>Settings</h2>
+            </div>
+            <div class="settings-list">
+                <div class="setting-item">
+                    <span>Force Low Quality Playback</span>
+                    <input type="checkbox" id="forceLowQualityToggle">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FULL SCREEN PLAYER OVERLAY VIEW -->
+    <div class="player-overlay" id="playerOverlay">
+        <div class="player-top-nav">
+            <button class="icon-btn" id="closePlayerBtn"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="player-title" id="playerTitle">Match / Channel Title</div>
+            <div class="player-nav-actions">
+                <button class="icon-btn" id="playerFavBtn"><i class="fa-regular fa-star"></i></button>
+                <button class="icon-btn" id="pipBtn" title="Picture in Picture"><i class="fa-solid fa-window-restore"></i></button>
+                <button class="icon-btn" id="shareBtn"><i class="fa-solid fa-share-nodes"></i></button>
+            </div>
         </div>
-      </div>
-    </section>
 
-  </main>
-
-  <!-- SIDE DRAWER NAVIGATION -->
-  <div id="side-drawer-overlay" class="drawer-overlay hidden"></div>
-  <aside id="side-drawer" class="side-drawer">
-    <div class="drawer-header">
-      <div class="drawer-brand">
-        <div class="logo-circle small"><i class="fa-solid fa-play"></i></div>
-        <div>
-          <h3>HighFy TV</h3>
-          <span class="drawer-version">v1.0.0 • Mobile Edition</span>
+        <div class="video-container">
+            <video id="videoPlayer" controls playsinline></video>
+            <div class="video-loader" id="videoLoader">
+                <div class="spinner"></div>
+                <span>Loading Stream...</span>
+            </div>
+            <div class="video-error" id="videoError">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <p>Playback failed or stream offline.</p>
+                <button id="retryPlayerBtn" class="pill-btn">Retry</button>
+            </div>
         </div>
-      </div>
-      <button id="close-drawer-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
-    </div>
 
-    <div class="drawer-body">
-      <div class="drawer-menu-group">
-        <label class="drawer-group-label">QUICK CONTROLS</label>
-        
-        <button class="drawer-item" id="drawer-network-stream">
-          <i class="fa-solid fa-link drawer-icon text-accent"></i>
-          <span>Network Stream Playlist</span>
-        </button>
-
-        <button class="drawer-item" id="drawer-toggle-lowq">
-          <i class="fa-solid fa-gauge-simple-min drawer-icon"></i>
-          <span>Force Low Quality</span>
-          <span class="drawer-badge" id="drawer-lowq-status">OFF</span>
-        </button>
-      </div>
-
-      <div class="drawer-menu-group">
-        <label class="drawer-group-label">SPORTS SCORE CENTER</label>
-
-        <a href="https://m.cricbuzz.com" target="_blank" rel="noopener" class="drawer-item">
-          <i class="fa-solid fa-baseball-bat-ball drawer-icon text-green"></i>
-          <span>Live Cricket Scores</span>
-          <i class="fa-solid fa-arrow-up-right-from-square text-muted size-12"></i>
-        </a>
-
-        <a href="https://www.flashscore.com" target="_blank" rel="noopener" class="drawer-item">
-          <i class="fa-solid fa-futbol drawer-icon text-blue"></i>
-          <span>Live Football Scores</span>
-          <i class="fa-solid fa-arrow-up-right-from-square text-muted size-12"></i>
-        </a>
-      </div>
-
-      <div class="drawer-menu-group">
-        <label class="drawer-group-label">COMMUNITY & LINKS</label>
-
-        <button class="drawer-item" id="drawer-telegram-btn">
-          <i class="fa-brands fa-telegram drawer-icon telegram-blue"></i>
-          <span>Telegram Community</span>
-        </button>
-
-        <button class="drawer-item" id="drawer-contact-btn">
-          <i class="fa-solid fa-headset drawer-icon"></i>
-          <span>Contact Support</span>
-        </button>
-
-        <button class="drawer-item" id="drawer-website-btn">
-          <i class="fa-solid fa-globe drawer-icon"></i>
-          <span>Official Website</span>
-        </button>
-
-        <button class="drawer-item" id="drawer-share-btn">
-          <i class="fa-solid fa-share-nodes drawer-icon text-purple"></i>
-          <span>Share HighFy TV</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="drawer-footer">
-      <p id="drawer-copyright">© 2026 HighFy TV. All rights reserved.</p>
-    </div>
-  </aside>
-
-  <!-- FULLSCREEN PLAYER MODAL OVERLAY -->
-  <div id="player-modal" class="player-modal hidden">
-    <!-- Player Top Header -->
-    <div class="player-top-bar">
-      <button id="player-back-btn" class="player-icon-btn"><i class="fa-solid fa-arrow-left"></i></button>
-      <div class="player-title-info">
-        <h4 id="player-channel-title">Loading Stream...</h4>
-        <span id="player-channel-subtitle" class="player-badge-live">LIVE • HD</span>
-      </div>
-      <div class="player-top-actions">
-        <button id="player-fav-btn" class="player-icon-btn"><i class="fa-regular fa-star"></i></button>
-        <button id="player-share-btn" class="player-icon-btn"><i class="fa-solid fa-share-nodes"></i></button>
-      </div>
-    </div>
-
-    <!-- Video Element Container -->
-    <div id="video-wrapper" class="video-wrapper">
-      <video id="main-video-player" class="video-element" playsinline webkit-playsinline></video>
-      
-      <!-- Video Loader Overlay -->
-      <div id="video-loader" class="video-loader-overlay">
-        <div class="spinner"></div>
-        <p id="video-loader-text">Connecting to Live Stream...</p>
-      </div>
-
-      <!-- Video Error Overlay -->
-      <div id="video-error-overlay" class="video-error-overlay hidden">
-        <i class="fa-solid fa-triangle-exclamation error-icon"></i>
-        <h3>Stream Unavailable</h3>
-        <p id="video-error-msg">Failed to load live video manifest or stream offline.</p>
-        <button id="player-retry-btn" class="btn btn-primary"><i class="fa-solid fa-rotate-right"></i> Retry Stream</button>
-      </div>
-    </div>
-
-    <!-- Player Bottom Content Area -->
-    <div class="player-details-container">
-      <div class="player-channel-meta">
-        <img id="player-logo-img" src="assets/logo.png" alt="Channel Logo" class="player-logo">
-        <div class="player-meta-text">
-          <h3 id="player-meta-title">Channel Name</h3>
-          <p id="player-meta-desc">Live TV Channel Stream</p>
+        <!-- SERVER / STREAM SELECTOR TABS BELOW VIDEO (AS IN REFERENCE) -->
+        <div class="stream-servers-bar" id="streamServersBar">
+            <!-- Server tabs dynamically inserted -->
         </div>
-        <button id="player-pip-btn" class="btn btn-secondary btn-sm"><i class="fa-solid fa-clone"></i> Float</button>
-      </div>
 
-      <div class="player-related-section">
-        <div class="section-header">
-          <h4><i class="fa-solid fa-list-ul text-accent"></i> Related Channels</h4>
+        <!-- RELATED CHANNELS / EVENT INFO BELOW PLAYER -->
+        <div class="player-extra-content">
+            <div class="sub-heading">Related Channels</div>
+            <div class="grid-3col" id="relatedChannelsGrid"></div>
         </div>
-        <div id="player-related-grid" class="channel-grid">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- NETWORK STREAM CUSTOM MODAL -->
-  <div id="network-modal" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-link text-accent"></i> Open Network Stream</h3>
-        <button id="close-network-modal" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <p>Paste any M3U8 HLS stream URL below to play directly in HighFy TV:</p>
-        <div class="input-group">
-          <input type="url" id="custom-m3u8-input" placeholder="https://example.com/live/stream.m3u8" autocomplete="off">
+    <!-- SEARCH OVERLAY MODAL -->
+    <div class="search-modal" id="searchModal">
+        <div class="search-header">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="searchInput" placeholder="Search channels, categories, events...">
+            <button class="icon-btn" id="closeSearchBtn"><i class="fa-solid fa-xmark"></i></button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button id="cancel-network-btn" class="btn btn-secondary">Cancel</button>
-        <button id="play-network-btn" class="btn btn-primary">Play Stream</button>
-      </div>
+        <div class="search-results grid-3col" id="searchResultsGrid"></div>
     </div>
-  </div>
 
-  <!-- FIXED BOTTOM NAVIGATION BAR -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" data-target="view-home">
-      <i class="fa-solid fa-house"></i>
-      <span data-i18n="navHome">Home</span>
-    </button>
-    <button class="nav-item" data-target="view-sports">
-      <i class="fa-solid fa-trophy"></i>
-      <span data-i18n="navSports">Sports</span>
-    </button>
-    <button class="nav-item" data-target="view-categories">
-      <i class="fa-solid fa-border-all"></i>
-      <span data-i18n="navCategories">Categories</span>
-    </button>
-    <button class="nav-item" data-target="view-favorites">
-      <i class="fa-solid fa-star"></i>
-      <span data-i18n="navFavorites">Favorites</span>
-    </button>
-    <button class="nav-item" data-target="view-settings">
-      <i class="fa-solid fa-gear"></i>
-      <span data-i18n="navSettings">Settings</span>
-    </button>
-  </nav>
+    <!-- FULL SIDE DRAWER MENU (EXACTLY MATCHING SCREENSHOT 2) -->
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="side-drawer" id="sideDrawer">
+        <nav class="drawer-nav">
+            <button class="drawer-item" data-action="network-stream">
+                <i class="fa-solid fa-network-wired"></i>
+                <span>Network Stream</span>
+            </button>
+            <button class="drawer-item" data-action="playlists">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Playlists</span>
+            </button>
+            <button class="drawer-item" data-action="floating-player">
+                <i class="fa-solid fa-square-minus"></i>
+                <span>Floating Player</span>
+            </button>
+            <button class="drawer-item" data-action="force-low-quality">
+                <i class="fa-solid fa-gear"></i>
+                <span>Force Low Quality</span>
+            </button>
+            <button class="drawer-item" data-action="cricket-score">
+                <i class="fa-solid fa-baseball-bat-ball"></i>
+                <span>Cricket Score</span>
+            </button>
+            <button class="drawer-item" data-action="football-score">
+                <i class="fa-solid fa-futbol"></i>
+                <span>Football Score</span>
+            </button>
+            <button class="drawer-item" data-action="telegram">
+                <i class="fa-paper-plane fa-solid"></i>
+                <span>Telegram</span>
+            </button>
+            <button class="drawer-item" data-action="contact">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Contact US</span>
+            </button>
+            <button class="drawer-item" data-action="website">
+                <i class="fa-solid fa-globe"></i>
+                <span>Website</span>
+            </button>
+            <button class="drawer-item" data-action="share">
+                <i class="fa-solid fa-share-nodes"></i>
+                <span>Share App</span>
+            </button>
+            <button class="drawer-item" data-action="copyright">
+                <i class="fa-regular fa-copyright"></i>
+                <span>Copyright</span>
+            </button>
+            <button class="drawer-item" data-action="exit">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Exit</span>
+            </button>
+        </nav>
+    </aside>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container"></div>
+    <!-- COMPACT 3-TAB BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <button class="nav-tab active" data-view="eventsView">
+            <i class="fa-solid fa-tower-broadcast"></i>
+            <span>Events</span>
+        </button>
+        <button class="nav-tab" data-view="sportsView">
+            <i class="fa-solid fa-futbol"></i>
+            <span>Sports</span>
+        </button>
+        <button class="nav-tab" data-view="categoriesView">
+            <i class="fa-solid fa-tv"></i>
+            <span>Categories</span>
+        </button>
+    </nav>
 
-  <!-- Main JavaScript File -->
-  <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
