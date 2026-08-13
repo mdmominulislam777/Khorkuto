@@ -4,7 +4,7 @@
 
 const CONFIG = {
     // আপনার আসল Sportmonks API Token এখানে বসান
-    SPORTMONKS_API_TOKEN: "https://api.sportmonks.com/v3/football/teams/85?api_token=YOUR_TOKEN&include=upcoming.participants;upcoming.league",
+    SPORTMONKS_API_TOKEN: "",
     
     // Base URL for Sportmonks v3 API
     BASE_URL: "https://api.sportmonks.com/v3",
