@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HighFy TV</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- FontAwesome for Crisp Icons -->
+    
+    <!-- STRICT RELATIVE PATH TO ROOT STYLESHEET -->
+    <link rel="stylesheet" href="./style.css">
+
+    <!-- FontAwesome for Crisp UI Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- HLS.js for Streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
+    <!-- STRICT RELATIVE PATH TO DEFERRED JS -->
+    <script src="./script.js" defer></script>
 </head>
 <body>
 
@@ -22,7 +28,7 @@
         </div>
         <div class="header-right">
             <button class="icon-btn" id="networkStreamHeaderBtn" title="Network Stream">
-                <i class="fa-solid fa-play-circle"></i>
+                <i class="fa-solid fa-network-wired"></i>
             </button>
             <button class="icon-btn" id="headerFavBtn" title="Favorites">
                 <i class="fa-solid fa-star"></i>
@@ -38,14 +44,14 @@
 
     <!-- VERSION / ANNOUNCEMENT NOTIFICATION BAR -->
     <div class="announcement-bar" id="announcementBar">
-        <span id="announcementText">HighFy TV Version 4.1 now available. Download the latest release!</span>
+        <span id="announcementText">HighFy TV Version 4.1 loaded successfully!</span>
         <i class="fa-solid fa-xmark close-announcement" id="closeAnnouncement"></i>
     </div>
 
-    <!-- MAIN CONTENT VIEW CONTAINER -->
+    <!-- MAIN VIEW CONTAINER (ONLY ONE ACTIVE VIEW SHOWS AT A TIME) -->
     <main class="main-content" id="mainContent">
 
-        <!-- 1. EVENTS VIEW (HOME) -->
+        <!-- 1. EVENTS VIEW (DEFAULT HOME) -->
         <section class="view-screen active" id="eventsView">
             <!-- Sport Shortcuts Row -->
             <div class="sports-shortcuts-wrapper">
@@ -93,7 +99,7 @@
                 <h2>Sports Channels</h2>
             </div>
             <div class="grid-3col" id="sportsGrid">
-                <!-- Dynamically populated from channels.json (Sports category) -->
+                <!-- Dynamically populated from channels.json -->
             </div>
         </section>
 
@@ -126,7 +132,7 @@
                 <h2>Favorite Channels</h2>
             </div>
             <div class="grid-3col" id="favoritesGrid">
-                <!-- Dynamically populated from LocalStorage -->
+                <!-- Dynamically populated -->
             </div>
         </section>
 
@@ -136,7 +142,7 @@
                 <h2>Network Stream</h2>
             </div>
             <div class="form-container">
-                <p>Enter an M3U8 or HLS live stream video URL:</p>
+                <p class="form-label">Enter an M3U8 or HLS stream URL:</p>
                 <input type="text" id="streamUrlInput" placeholder="https://example.com/live/stream.m3u8" class="custom-input">
                 <button id="playNetworkStreamBtn" class="action-btn">
                     <i class="fa-solid fa-play"></i> Play Stream
@@ -162,7 +168,7 @@
                 <h2 id="scoreTitle">Sports Score</h2>
             </div>
             <div class="info-box" id="scoreContent">
-                API integration ready. Live score data feeds will load here.
+                Live match score feeds will display here during live games.
             </div>
         </section>
 
@@ -183,7 +189,7 @@
     <div class="player-overlay" id="playerOverlay">
         <div class="player-top-nav">
             <button class="icon-btn" id="closePlayerBtn"><i class="fa-solid fa-arrow-left"></i></button>
-            <div class="player-title" id="playerTitle">Match / Channel Title</div>
+            <div class="player-title" id="playerTitle">Match Stream</div>
             <div class="player-nav-actions">
                 <button class="icon-btn" id="playerFavBtn"><i class="fa-regular fa-star"></i></button>
                 <button class="icon-btn" id="pipBtn" title="Picture in Picture"><i class="fa-solid fa-window-restore"></i></button>
@@ -204,12 +210,12 @@
             </div>
         </div>
 
-        <!-- SERVER / STREAM SELECTOR TABS BELOW VIDEO (AS IN REFERENCE) -->
+        <!-- STREAM / SERVER TABS BELOW VIDEO -->
         <div class="stream-servers-bar" id="streamServersBar">
-            <!-- Server tabs dynamically inserted -->
+            <!-- Dynamically populated -->
         </div>
 
-        <!-- RELATED CHANNELS / EVENT INFO BELOW PLAYER -->
+        <!-- RELATED CHANNELS BELOW PLAYER -->
         <div class="player-extra-content">
             <div class="sub-heading">Related Channels</div>
             <div class="grid-3col" id="relatedChannelsGrid"></div>
@@ -226,7 +232,7 @@
         <div class="search-results grid-3col" id="searchResultsGrid"></div>
     </div>
 
-    <!-- FULL SIDE DRAWER MENU (EXACTLY MATCHING SCREENSHOT 2) -->
+    <!-- SIDE DRAWER & BACKDROP -->
     <div class="drawer-backdrop" id="drawerBackdrop"></div>
     <aside class="side-drawer" id="sideDrawer">
         <nav class="drawer-nav">
@@ -297,6 +303,5 @@
         </button>
     </nav>
 
-    <script src="app.js"></script>
 </body>
 </html>
