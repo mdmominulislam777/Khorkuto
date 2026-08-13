@@ -273,52 +273,75 @@ class SportmonksService {
     // SMART STATUS
     // ==========================================
 
-    calculateStatus(item, sport) {
+calculateStatus(item, sport) {
 
-    const apiStatus =
-        this.mapMatchStatus(item.state);
+    const state = item.state || {};
 
-    // Sportmonks explicitly says LIVE
-    if (apiStatus === "live") {
+    const stateCode = String(
+        state.short_name ||
+        state.name ||
+        state.code ||
+        ""
+    ).toUpperCase().trim();
+
+    console.log(
+        "MATCH STATE:",
+        item.id,
+        item.name,
+        state
+    );
+
+    // LIVE — only when API explicitly reports a live state
+    const liveStates = [
+        "LIVE",
+        "INPLAY",
+        "IN_PLAY",
+        "1H",
+        "2H",
+        "HT",
+        "ET",
+        "PEN",
+        "PEN_BREAK",
+        "1ST_INNINGS",
+        "2ND_INNINGS",
+        "INNINGS_BREAK"
+    ];
+
+    // FINISHED
+    const finishedStates = [
+        "FT",
+        "AET",
+        "FT_PEN",
+        "FINISHED",
+        "FULL_TIME",
+        "ENDED"
+    ];
+
+    // CANCELLED / POSTPONED
+    const cancelledStates = [
+        "CANCL",
+        "CANCELLED",
+        "CANCELED",
+        "POSTP",
+        "POSTPONED",
+        "ABANDONED"
+    ];
+
+    if (liveStates.includes(stateCode)) {
         return "live";
     }
 
-    // Sportmonks explicitly says FINISHED
-    if (apiStatus === "finished") {
+    if (finishedStates.includes(stateCode)) {
         return "finished";
     }
 
-    // If API provides a state but it is not live/finished,
-    // trust the API and keep it upcoming.
-    if (item.state) {
-        return "upcoming";
+    if (cancelledStates.includes(stateCode)) {
+        return "finished";
     }
 
-    // If there is no state at all, DO NOT guess that it is live.
-    // Use starting time only for upcoming/finished fallback.
-    if (!item.starting_at) {
-        return "upcoming";
-    }
-
-    const start =
-        new Date(item.starting_at);
-
-    const now =
-        new Date();
-
-    if (isNaN(start.getTime())) {
-        return "upcoming";
-    }
-
-    // Future match
-    if (start.getTime() > now.getTime()) {
-        return "upcoming";
-    }
-
-    // Do NOT automatically call an old match LIVE.
-    return "finished";
+    // Everything else = Upcoming
+    return "upcoming";
 }
-
 
     // ==========================================
     // TIME FORMAT
