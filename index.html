@@ -2,185 +2,473 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HighFy TV - Live Sports & Events</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HighFy TV - Live TV & Sports</title>
   
+  <!-- App Meta -->
+  <meta name="description" content="HighFy TV - Premium Live TV & Sports Streaming App">
+  <meta name="theme-color" content="#0a0c14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0b0f19">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- HLS.js Library -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-</head>
-<body class="bg-[#0b0f19] text-white font-sans max-w-md mx-auto min-h-screen pb-20 border-x border-gray-800 select-none relative overflow-x-hidden">
 
-  <!-- Header -->
-  <header class="flex justify-between items-center p-4 bg-[#0b0f19] sticky top-0 z-40 border-b border-gray-800">
-    <div class="flex items-center space-x-3">
-      <h1 class="font-bold text-lg text-blue-500 tracking-wide">HighFy TV</h1>
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Splash Screen / Loader -->
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-content">
+      <div class="logo-glow-wrapper">
+        <div class="logo-circle">
+          <i class="fa-solid fa-play"></i>
+        </div>
+      </div>
+      <h1 class="app-brand-title">HighFy <span>TV</span></h1>
+      <p class="app-tagline" data-i18n="tagline">Premium Live TV & Sports</p>
+      <div class="spinner"></div>
     </div>
-    <div class="flex items-center space-x-3 text-xs text-gray-400">
-      <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Live Auto Sync
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <button id="menu-btn" class="icon-btn" aria-label="Open Drawer Menu">
+        <i class="fa-solid fa-bars-staggered"></i>
+      </button>
+      <div class="brand-logo" id="home-brand-btn">
+        <i class="fa-solid fa-bolt brand-icon"></i>
+        <span class="brand-name">HighFy <span>TV</span></span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button id="search-toggle-btn" class="icon-btn" aria-label="Search Channels">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+      <div class="live-status-pill">
+        <span class="pulse-dot"></span>
+        <span>LIVE</span>
+      </div>
     </div>
   </header>
 
-  <!-- Video Player Modal -->
-  <div id="player-container" class="hidden p-3 bg-black sticky top-[57px] z-30">
-    <div class="relative w-full aspect-video bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
-      <video id="video" controls class="w-full h-full"></video>
-      <button onclick="closePlayer()" class="absolute top-2 right-2 bg-red-600 text-white w-7 h-7 rounded-full text-xs font-bold">✕</button>
+  <!-- Dynamic Search Bar Overlay -->
+  <div id="search-overlay" class="search-overlay hidden">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="text" id="search-input" placeholder="Search channels, sports, languages..." autocomplete="off">
+      <button id="search-clear-btn" class="icon-btn search-close"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <p id="player-title" class="text-xs text-blue-400 mt-2 font-medium"></p>
   </div>
 
-  <!-- Sports Category Filters -->
-  <div class="flex space-x-2 p-3 overflow-x-auto text-xs font-medium no-scrollbar border-b border-gray-800/50">
-    <button onclick="setCategory('all')" id="cat-all" class="bg-blue-600 text-white px-3.5 py-1.5 rounded-full whitespace-nowrap">All</button>
-    <button onclick="setCategory('football')" id="cat-football" class="bg-[#131927] border border-gray-800 text-gray-300 px-3.5 py-1.5 rounded-full whitespace-nowrap">⚽ Football</button>
-    <button onclick="setCategory('cricket')" id="cat-cricket" class="bg-[#131927] border border-gray-800 text-gray-300 px-3.5 py-1.5 rounded-full whitespace-nowrap">🏏 Cricket</button>
-    <button onclick="setCategory('tennis')" id="cat-tennis" class="bg-[#131927] border border-gray-800 text-gray-300 px-3.5 py-1.5 rounded-full whitespace-nowrap">🎾 Tennis</button>
-    <button onclick="setCategory('basketball')" id="cat-basketball" class="bg-[#131927] border border-gray-800 text-gray-300 px-3.5 py-1.5 rounded-full whitespace-nowrap">🏀 Basketball</button>
-    <button onclick="setCategory('motorsports')" id="cat-motorsports" class="bg-[#131927] border border-gray-800 text-gray-300 px-3.5 py-1.5 rounded-full whitespace-nowrap">🏎️ Motorsports</button>
-    <button onclick="setCategory('wwe')" id="cat-wwe" class="bg-[#131927] border border-gray-800 text-gray-300 px-3.5 py-1.5 rounded-full whitespace-nowrap">⚡ WWE</button>
-  </div>
+  <!-- Main Scrollable App Container -->
+  <main class="app-main-content">
 
-  <!-- Dynamic Match Container -->
-  <div id="matches-container" class="p-3 space-y-3">
-    <div class="text-center text-gray-500 text-xs py-8">Loading Live Data...</div>
-  </div>
+    <!-- VIEW 1: HOME & EVENTS -->
+    <section id="view-home" class="app-view active">
+      
+      <!-- Featured Hero Banner -->
+      <div class="featured-slider-container">
+        <div class="section-header">
+          <h2><i class="fa-solid fa-fire text-accent"></i> <span data-i18n="featured">Featured Events</span></h2>
+        </div>
+        <div id="featured-carousel" class="featured-carousel">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
 
-  <script>
-    let matchesData = [];
-    let activeCategory = 'all';
+      <!-- Recently Watched Section -->
+      <div id="recent-section" class="content-section hidden">
+        <div class="section-header">
+          <h2><i class="fa-solid fa-clock-rotate-left text-accent"></i> <span data-i18n="recentlyWatched">Recently Watched</span></h2>
+          <button id="clear-history-btn" class="text-btn" data-i18n="clear">Clear</button>
+        </div>
+        <div id="recent-channels-list" class="horizontal-card-scroll">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
 
-    // ১. অনলাইন JSON ফাইল থেকে ডাটা লোড করার মেথড
-    async function fetchLiveMatches() {
-      try {
-        // এখানে আপনার GitHub Raw JSON লিঙ্ক বসাবেন
-        const response = await fetch('./matches.json');
-        matchesData = await response.json();
-        renderMatches();
-      } catch (error) {
-        console.error("Error fetching match data:", error);
-      }
-    }
+      <!-- Live Sports Matches Section -->
+      <div class="content-section">
+        <div class="section-header">
+          <h2><i class="fa-solid fa-trophy text-accent"></i> <span data-i18n="liveNow">Live Matches & Events</span></h2>
+          <span class="badge badge-live" id="live-events-count">0 LIVE</span>
+        </div>
+        <div id="live-events-list" class="events-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
 
-    // ২. ফিল্টারিং এবং অটো-টাইমার লজিক
-    function renderMatches() {
-      const container = document.getElementById('matches-container');
-      const now = new Date();
-      let htmlContent = '';
+      <!-- Popular Channels Section -->
+      <div class="content-section">
+        <div class="section-header">
+          <h2><i class="fa-solid fa-tv text-accent"></i> <span data-i18n="popularChannels">Popular Live Channels</span></h2>
+        </div>
+        <div id="home-channels-grid" class="channel-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
 
-      const filtered = matchesData.filter(m => activeCategory === 'all' || m.category === activeCategory);
+    </section>
 
-      if(filtered.length === 0) {
-        container.innerHTML = `<div class="text-center text-gray-500 text-xs py-8">No live or upcoming events for this category.</div>`;
-        return;
-      }
+    <!-- VIEW 2: SPORTS PAGE -->
+    <section id="view-sports" class="app-view">
+      <div class="sports-header">
+        <h2 data-i18n="sportsHub">Sports Hub</h2>
+        <p data-i18n="sportsSubtitle">Select a sport to filter live matches and streams</p>
+      </div>
 
-      filtered.forEach(match => {
-        const start = new Date(match.startTime);
-        const end = new Date(match.endTime);
-        
-        let statusBadge = '';
-        let isLive = false;
+      <!-- Sports Category Chips -->
+      <div class="sports-chips-scroll" id="sports-filter-chips">
+        <!-- Dynamically rendered sport chips -->
+      </div>
 
-        if (now >= start && now <= end) {
-          isLive = true;
-          statusBadge = `<span class="bg-red-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold animate-pulse">● LIVE NOW</span>`;
-        } else if (now < start) {
-          const diffMs = start - now;
-          const mins = Math.floor(diffMs / (1000 * 60));
-          statusBadge = `<span class="bg-blue-900/60 text-blue-300 text-[10px] px-2 py-0.5 rounded-full font-medium">Starts in ${mins}m</span>`;
-        } else {
-          statusBadge = `<span class="bg-gray-800 text-gray-400 text-[9px] px-2 py-0.5 rounded-full">FINISHED</span>`;
-        }
+      <div class="content-section">
+        <div class="section-header">
+          <h3 id="sports-section-title"><i class="fa-solid fa-circle-play text-accent"></i> All Sports Events</h3>
+        </div>
+        <div id="sports-events-grid" class="events-grid">
+          <!-- Filtered sports events -->
+        </div>
+      </div>
 
-        // রেন্ডার চ্যানেল বাটনসমূহ
-        let channelsHtml = '';
-        if (match.channels && match.channels.length > 0) {
-          channelsHtml = `<div class="mt-3 pt-2 border-t border-gray-800/80 flex flex-wrap gap-1.5 justify-center">`;
-          match.channels.forEach(ch => {
-            channelsHtml += `
-              <button onclick="playStream('${ch.url}', '${match.title} - ${ch.name}')" 
-                      class="bg-blue-950/80 hover:bg-blue-600 text-blue-200 hover:text-white border border-blue-800/50 px-2.5 py-1 rounded-md text-[10px] transition font-medium">
-                📺 ${ch.name}
-              </button>`;
-          });
-          channelsHtml += `</div>`;
-        }
+      <div class="content-section">
+        <div class="section-header">
+          <h3><i class="fa-solid fa-satellite-dish text-accent"></i> Sports Channels</h3>
+        </div>
+        <div id="sports-channels-grid" class="channel-grid">
+          <!-- Filtered sports channels -->
+        </div>
+      </div>
+    </section>
 
-        htmlContent += `
-          <div class="bg-[#131927] border ${isLive ? 'border-red-900/50 shadow-lg shadow-red-950/20' : 'border-gray-800'} rounded-xl p-3 transition">
-            <div class="text-center text-[11px] text-gray-400 mb-2 font-medium flex justify-between items-center px-1">
-              <span><i class="fa-solid ${match.icon} mr-1"></i> ${match.title}</span>
-              ${statusBadge}
+    <!-- VIEW 3: CATEGORIES PAGE -->
+    <section id="view-categories" class="app-view">
+      <div class="section-header">
+        <h2><i class="fa-solid fa-border-all text-accent"></i> <span data-i18n="allCategories">Explore Categories</span></h2>
+      </div>
+
+      <!-- Categories Grid -->
+      <div id="categories-grid" class="category-grid">
+        <!-- Dynamically populated category cards -->
+      </div>
+
+      <!-- Filtered Channels Title Container -->
+      <div id="category-channels-wrapper" class="category-channels-wrapper hidden">
+        <div class="section-header">
+          <h3 id="selected-category-title">Selected Category</h3>
+          <button id="reset-category-filter" class="text-btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        </div>
+        <div id="category-filtered-channels" class="channel-grid">
+          <!-- Dynamic channels -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: FAVORITES PAGE -->
+    <section id="view-favorites" class="app-view">
+      <div class="section-header">
+        <h2><i class="fa-solid fa-star text-accent"></i> <span data-i18n="myFavorites">My Favorites</span></h2>
+        <button id="clear-favs-btn" class="text-btn" data-i18n="clearAll">Clear All</button>
+      </div>
+      <div id="favorites-grid" class="channel-grid">
+        <!-- Dynamically populated favorites -->
+      </div>
+      <div id="favorites-empty" class="empty-state hidden">
+        <i class="fa-regular fa-star empty-icon"></i>
+        <h3 data-i18n="noFavoritesTitle">No Favorites Saved</h3>
+        <p data-i18n="noFavoritesDesc">Tap the star icon on any channel card or player to save it here.</p>
+      </div>
+    </section>
+
+    <!-- VIEW 5: SETTINGS PAGE -->
+    <section id="view-settings" class="app-view">
+      <div class="section-header">
+        <h2><i class="fa-solid fa-gear text-accent"></i> <span data-i18n="settings">Settings</span></h2>
+      </div>
+
+      <div class="settings-card-group">
+        <div class="settings-item">
+          <div class="settings-info">
+            <i class="fa-solid fa-language settings-icon"></i>
+            <div>
+              <span class="settings-title" data-i18n="language">App Language</span>
+              <span class="settings-desc">Choose primary display language</span>
             </div>
-            
-            <div class="flex justify-between items-center px-2 py-1">
-              <div class="flex flex-col items-center w-20">
-                <img src="${match.flag1}" class="w-8 h-8 rounded-full object-cover border border-gray-600">
-                <span class="text-xs font-semibold mt-1 text-center truncate w-full">${match.team1}</span>
-              </div>
-              <div class="text-center text-xs font-bold text-gray-500">VS</div>
-              <div class="flex flex-col items-center w-20">
-                <img src="${match.flag2}" class="w-8 h-8 rounded-full object-cover border border-gray-600">
-                <span class="text-xs font-semibold mt-1 text-center truncate w-full">${match.team2}</span>
-              </div>
-            </div>
-
-            ${channelsHtml}
           </div>
-        `;
-      });
+          <select id="setting-language-select" class="settings-control-select">
+            <option value="en">English</option>
+            <option value="bn">বাংলা (Bangla)</option>
+          </select>
+        </div>
 
-      container.innerHTML = htmlContent;
-    }
+        <div class="settings-item">
+          <div class="settings-info">
+            <i class="fa-solid fa-gauge-high settings-icon"></i>
+            <div>
+              <span class="settings-title" data-i18n="forceLowQuality">Force Low Quality</span>
+              <span class="settings-desc">Optimizes buffering on low speed networks</span>
+            </div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-force-low">
+            <span class="slider round"></span>
+          </label>
+        </div>
 
-    // ক্যাটাগরি সেট করার ফাংশন
-    function setCategory(cat) {
-      activeCategory = cat;
-      const categories = ['all', 'football', 'cricket', 'tennis', 'basketball', 'motorsports', 'wwe'];
-      categories.forEach(c => {
-        const btn = document.getElementById(`cat-${c}`);
-        if(btn) {
-          if (c === cat) {
-            btn.className = "bg-blue-600 text-white px-3.5 py-1.5 rounded-full whitespace-nowrap";
-          } else {
-            btn.className = "bg-[#131927] border border-gray-800 text-gray-300 px-3.5 py-1.5 rounded-full whitespace-nowrap";
-          }
-        }
-      });
-      renderMatches();
-    }
+        <div class="settings-item">
+          <div class="settings-info">
+            <i class="fa-solid fa-play settings-icon"></i>
+            <div>
+              <span class="settings-title" data-i18n="autoplay">Autoplay Stream</span>
+              <span class="settings-desc">Start playback instantly when opening channel</span>
+            </div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-autoplay" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
 
-    // স্ট্রিমিং প্লেয়ার
-    function playStream(url, title) {
-      const container = document.getElementById('player-container');
-      const video = document.getElementById('video');
-      document.getElementById('player-title').innerText = "Playing: " + title;
-      container.classList.remove('hidden');
+        <div class="settings-item action-item" id="btn-clear-cache">
+          <div class="settings-info">
+            <i class="fa-solid fa-trash-can settings-icon danger"></i>
+            <div>
+              <span class="settings-title danger-text" data-i18n="clearAppCache">Clear App Cache & Storage</span>
+              <span class="settings-desc">Resets saved preferences, history, and favorites</span>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-muted"></i>
+        </div>
+      </div>
 
-      if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(url);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
-        video.play();
-      }
-    }
+      <!-- About Section -->
+      <div class="section-header" style="margin-top: 24px;">
+        <h2><i class="fa-solid fa-circle-info text-accent"></i> <span data-i18n="aboutApp">About HighFy TV</span></h2>
+      </div>
+      <div class="settings-card-group">
+        <div class="settings-item">
+          <span class="settings-title" data-i18n="version">Application Version</span>
+          <span class="settings-value" id="app-version-label">1.0.0</span>
+        </div>
+        <div class="settings-item">
+          <span class="settings-title" data-i18n="platform">Platform Mode</span>
+          <span class="settings-value" id="platform-type-label">Web Standard</span>
+        </div>
+        <div class="settings-item action-item" id="btn-open-telegram">
+          <div class="settings-info">
+            <i class="fa-brands fa-telegram settings-icon telegram-blue"></i>
+            <div>
+              <span class="settings-title">Official Telegram Channel</span>
+              <span class="settings-desc">Get live stream updates and match links</span>
+            </div>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square text-muted"></i>
+        </div>
+      </div>
+    </section>
 
-    function closePlayer() {
-      document.getElementById('video').pause();
-      document.getElementById('player-container').classList.add('hidden');
-    }
+  </main>
 
-    // ৩০ সেকেন্ড পর পর স্বয়ংক্রিয় ডাটা রিফ্রেশ (Auto Sync)
-    fetchLiveMatches();
-    setInterval(fetchLiveMatches, 30000);
-    setInterval(renderMatches, 10000); // টাইমার রিফ্রেশ
-  </script>
+  <!-- SIDE DRAWER NAVIGATION -->
+  <div id="side-drawer-overlay" class="drawer-overlay hidden"></div>
+  <aside id="side-drawer" class="side-drawer">
+    <div class="drawer-header">
+      <div class="drawer-brand">
+        <div class="logo-circle small"><i class="fa-solid fa-play"></i></div>
+        <div>
+          <h3>HighFy TV</h3>
+          <span class="drawer-version">v1.0.0 • Mobile Edition</span>
+        </div>
+      </div>
+      <button id="close-drawer-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="drawer-body">
+      <div class="drawer-menu-group">
+        <label class="drawer-group-label">QUICK CONTROLS</label>
+        
+        <button class="drawer-item" id="drawer-network-stream">
+          <i class="fa-solid fa-link drawer-icon text-accent"></i>
+          <span>Network Stream Playlist</span>
+        </button>
+
+        <button class="drawer-item" id="drawer-toggle-lowq">
+          <i class="fa-solid fa-gauge-simple-min drawer-icon"></i>
+          <span>Force Low Quality</span>
+          <span class="drawer-badge" id="drawer-lowq-status">OFF</span>
+        </button>
+      </div>
+
+      <div class="drawer-menu-group">
+        <label class="drawer-group-label">SPORTS SCORE CENTER</label>
+
+        <a href="https://m.cricbuzz.com" target="_blank" rel="noopener" class="drawer-item">
+          <i class="fa-solid fa-baseball-bat-ball drawer-icon text-green"></i>
+          <span>Live Cricket Scores</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-muted size-12"></i>
+        </a>
+
+        <a href="https://www.flashscore.com" target="_blank" rel="noopener" class="drawer-item">
+          <i class="fa-solid fa-futbol drawer-icon text-blue"></i>
+          <span>Live Football Scores</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-muted size-12"></i>
+        </a>
+      </div>
+
+      <div class="drawer-menu-group">
+        <label class="drawer-group-label">COMMUNITY & LINKS</label>
+
+        <button class="drawer-item" id="drawer-telegram-btn">
+          <i class="fa-brands fa-telegram drawer-icon telegram-blue"></i>
+          <span>Telegram Community</span>
+        </button>
+
+        <button class="drawer-item" id="drawer-contact-btn">
+          <i class="fa-solid fa-headset drawer-icon"></i>
+          <span>Contact Support</span>
+        </button>
+
+        <button class="drawer-item" id="drawer-website-btn">
+          <i class="fa-solid fa-globe drawer-icon"></i>
+          <span>Official Website</span>
+        </button>
+
+        <button class="drawer-item" id="drawer-share-btn">
+          <i class="fa-solid fa-share-nodes drawer-icon text-purple"></i>
+          <span>Share HighFy TV</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <p id="drawer-copyright">© 2026 HighFy TV. All rights reserved.</p>
+    </div>
+  </aside>
+
+  <!-- FULLSCREEN PLAYER MODAL OVERLAY -->
+  <div id="player-modal" class="player-modal hidden">
+    <!-- Player Top Header -->
+    <div class="player-top-bar">
+      <button id="player-back-btn" class="player-icon-btn"><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="player-title-info">
+        <h4 id="player-channel-title">Loading Stream...</h4>
+        <span id="player-channel-subtitle" class="player-badge-live">LIVE • HD</span>
+      </div>
+      <div class="player-top-actions">
+        <button id="player-fav-btn" class="player-icon-btn"><i class="fa-regular fa-star"></i></button>
+        <button id="player-share-btn" class="player-icon-btn"><i class="fa-solid fa-share-nodes"></i></button>
+      </div>
+    </div>
+
+    <!-- Video Element Container -->
+    <div id="video-wrapper" class="video-wrapper">
+      <video id="main-video-player" class="video-element" playsinline webkit-playsinline></video>
+      
+      <!-- Video Loader Overlay -->
+      <div id="video-loader" class="video-loader-overlay">
+        <div class="spinner"></div>
+        <p id="video-loader-text">Connecting to Live Stream...</p>
+      </div>
+
+      <!-- Video Error Overlay -->
+      <div id="video-error-overlay" class="video-error-overlay hidden">
+        <i class="fa-solid fa-triangle-exclamation error-icon"></i>
+        <h3>Stream Unavailable</h3>
+        <p id="video-error-msg">Failed to load live video manifest or stream offline.</p>
+        <button id="player-retry-btn" class="btn btn-primary"><i class="fa-solid fa-rotate-right"></i> Retry Stream</button>
+      </div>
+    </div>
+
+    <!-- Player Bottom Content Area -->
+    <div class="player-details-container">
+      <div class="player-channel-meta">
+        <img id="player-logo-img" src="assets/logo.png" alt="Channel Logo" class="player-logo">
+        <div class="player-meta-text">
+          <h3 id="player-meta-title">Channel Name</h3>
+          <p id="player-meta-desc">Live TV Channel Stream</p>
+        </div>
+        <button id="player-pip-btn" class="btn btn-secondary btn-sm"><i class="fa-solid fa-clone"></i> Float</button>
+      </div>
+
+      <div class="player-related-section">
+        <div class="section-header">
+          <h4><i class="fa-solid fa-list-ul text-accent"></i> Related Channels</h4>
+        </div>
+        <div id="player-related-grid" class="channel-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NETWORK STREAM CUSTOM MODAL -->
+  <div id="network-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-link text-accent"></i> Open Network Stream</h3>
+        <button id="close-network-modal" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>Paste any M3U8 HLS stream URL below to play directly in HighFy TV:</p>
+        <div class="input-group">
+          <input type="url" id="custom-m3u8-input" placeholder="https://example.com/live/stream.m3u8" autocomplete="off">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel-network-btn" class="btn btn-secondary">Cancel</button>
+        <button id="play-network-btn" class="btn btn-primary">Play Stream</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIXED BOTTOM NAVIGATION BAR -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-target="view-home">
+      <i class="fa-solid fa-house"></i>
+      <span data-i18n="navHome">Home</span>
+    </button>
+    <button class="nav-item" data-target="view-sports">
+      <i class="fa-solid fa-trophy"></i>
+      <span data-i18n="navSports">Sports</span>
+    </button>
+    <button class="nav-item" data-target="view-categories">
+      <i class="fa-solid fa-border-all"></i>
+      <span data-i18n="navCategories">Categories</span>
+    </button>
+    <button class="nav-item" data-target="view-favorites">
+      <i class="fa-solid fa-star"></i>
+      <span data-i18n="navFavorites">Favorites</span>
+    </button>
+    <button class="nav-item" data-target="view-settings">
+      <i class="fa-solid fa-gear"></i>
+      <span data-i18n="navSettings">Settings</span>
+    </button>
+  </nav>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main JavaScript File -->
+  <script src="script.js"></script>
 </body>
 </html>
