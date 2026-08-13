@@ -1,6 +1,6 @@
 /**
  * HighFy TV - Application Engine
- * Pure Vanilla JS, Mobile-Optimized
+ * Absolute Relative Paths (`./`) enforced for GitHub Pages project hosting
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentFilter = "all";
     let currentSportShortcut = "all";
     let hlsInstance = null;
-    let favorites = JSON.parse(localStorage.getItem("highfy_favs") || "[]");
 
     // UI Elements
     const views = document.querySelectorAll(".view-screen");
@@ -35,13 +34,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const streamServersBar = document.getElementById("streamServersBar");
     const retryPlayerBtn = document.getElementById("retryPlayerBtn");
 
-    // Load Initial JSON Data
+    // Load Initial Data from Local Relative Paths
     async function initData() {
         try {
             const [chanRes, catRes, evtRes] = await Promise.all([
-                fetch("./data/channels.json"),
-                fetch("./data/categories.json"),
-                fetch("./data/events.json")
+                fetch("./channels.json"),
+                fetch("./categories.json"),
+                fetch("./events.json")
             ]);
 
             channelsData = await chanRes.json();
@@ -52,24 +51,31 @@ document.addEventListener("DOMContentLoaded", () => {
             renderSportsGrid();
             renderCategoriesGrid();
         } catch (e) {
-            console.error("Error loading JSON data, using fallback structure:", e);
+            console.error("Error loading JSON feeds:", e);
         }
     }
 
-    // Tab Navigation Switcher
+    // View Switcher Function
+    function switchView(viewId) {
+        views.forEach(v => v.classList.remove("active"));
+        const target = document.getElementById(viewId);
+        if (target) {
+            target.classList.add("active");
+        }
+        window.scrollTo(0, 0);
+    }
+
+    // Bottom Tab Navigation Controller
     navTabs.forEach(tab => {
         tab.addEventListener("click", () => {
             const targetView = tab.getAttribute("data-view");
             navTabs.forEach(t => t.classList.remove("active"));
             tab.classList.add("active");
-
-            views.forEach(v => v.classList.remove("active"));
-            document.getElementById(targetView).classList.add("active");
-            window.scrollTo(0, 0);
+            switchView(targetView);
         });
     });
 
-    // Drawer Menu Logic
+    // Side Drawer Controller
     openDrawerBtn.addEventListener("click", () => {
         sideDrawer.classList.add("open");
         drawerBackdrop.classList.add("active");
@@ -82,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         drawerBackdrop.classList.remove("active");
     }
 
-    // Drawer Menu Action Items
+    // Drawer Item Actions
     document.querySelectorAll(".drawer-item").forEach(item => {
         item.addEventListener("click", () => {
             const action = item.getAttribute("data-action");
@@ -100,12 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    function switchView(viewId) {
-        views.forEach(v => v.classList.remove("active"));
-        document.getElementById(viewId).classList.add("active");
-    }
-
-    // Render Events (Reference Screen 1)
+    // Render Events List
     function renderEvents() {
         const feed = document.getElementById("eventsFeed");
         feed.innerHTML = "";
@@ -120,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
             filtered = filtered.filter(e => e.status.toLowerCase() === currentFilter.toLowerCase());
         }
 
-        // Count update
+        // Update Pill Badge Counters
         document.getElementById("cntAll").textContent = eventsData.length;
         document.getElementById("cntLive").textContent = eventsData.filter(e => e.status === "live").length;
         document.getElementById("cntUpcoming").textContent = eventsData.filter(e => e.status === "upcoming").length;
@@ -162,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Filter Pills Click Events
+    // Filter Pills Click Handler
     document.querySelectorAll(".pill-btn").forEach(pill => {
         pill.addEventListener("click", () => {
             document.querySelectorAll(".pill-btn").forEach(p => p.classList.remove("active"));
@@ -172,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Shortcut Category Buttons
+    // Category Shortcuts Handler
     document.querySelectorAll(".shortcut-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".shortcut-btn").forEach(b => b.classList.remove("active"));
@@ -182,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Render Sports Grid (3-Column Layout - Reference Screen 3)
+    // Render Sports 3-Column Grid
     function renderSportsGrid() {
         const grid = document.getElementById("sportsGrid");
         grid.innerHTML = "";
@@ -193,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Render Categories Grid (3-Column Layout - Reference Screen 4)
+    // Render Categories 3-Column Grid
     function renderCategoriesGrid() {
         const grid = document.getElementById("categoriesGrid");
         grid.innerHTML = "";
@@ -216,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Drill-down into Category Channels
+    // Category Channels Drill-Down
     function openCategoryChannels(catName) {
         document.getElementById("categoryTitle").textContent = catName;
         const grid = document.getElementById("categoryChannelsGrid");
@@ -229,11 +230,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.getElementById("backToCategoriesBtn").addEventListener("click", () => {
-        const categoriesTab = document.querySelector('.nav-tab[data-view="categoriesView"]');
-        categoriesTab.click();
+        switchView("categoriesView");
     });
 
-    // Helper: Create Channel Grid Card
+    // Helper: Create Channel Card
     function createChannelCard(chan) {
         const card = document.createElement("div");
         card.className = "grid-card";
@@ -244,12 +244,12 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="card-title">${chan.name}</div>
         `;
         card.addEventListener("click", () => {
-            openPlayer(chan.name, [{ name: chan.name + " - AQ", url: chan.url }]);
+            openPlayer(chan.name, [{ name: chan.name + " - Auto", url: chan.url }]);
         });
         return card;
     }
 
-    // Player Logic (HLS Playback with Server Selector)
+    // Video Player & HLS Handler
     function openPlayer(title, streams) {
         playerTitle.textContent = title;
         playerOverlay.classList.add("active");
@@ -320,7 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (activeTab) activeTab.click();
     });
 
-    // Search Overlay logic
+    // Search Engine Overlay
     searchHeaderBtn.addEventListener("click", () => searchModal.classList.add("active"));
     closeSearchBtn.addEventListener("click", () => searchModal.classList.remove("active"));
 
@@ -333,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
         matched.forEach(chan => searchResultsGrid.appendChild(createChannelCard(chan)));
     });
 
-    // Header Actions
+    // Header Quick Buttons
     document.getElementById("closeAnnouncement").addEventListener("click", () => {
         document.getElementById("announcementBar").style.display = "none";
     });
@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (url) openPlayer("Custom Network Stream", [{ name: "Direct Stream", url }]);
     });
 
-    // Floating Player (Picture in Picture)
+    // Picture-in-Picture
     document.getElementById("pipBtn").addEventListener("click", async () => {
         try {
             if (document.pictureInPictureElement) {
@@ -364,10 +364,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 await videoPlayer.requestPictureInPicture();
             }
         } catch (e) {
-            alert("Picture-in-Picture not supported on this browser.");
+            alert("Picture-in-Picture mode not supported on this browser.");
         }
     });
 
-    // Run Initialization
+    // Initialize App Data
     initData();
 });
