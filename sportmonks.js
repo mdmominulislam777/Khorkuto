@@ -275,72 +275,49 @@ class SportmonksService {
 
     calculateStatus(item, sport) {
 
-        const apiStatus =
-            this.mapMatchStatus(item.state);
+    const apiStatus =
+        this.mapMatchStatus(item.state);
 
+    // Sportmonks explicitly says LIVE
+    if (apiStatus === "live") {
+        return "live";
+    }
 
-        // API explicitly says finished
-        if (apiStatus === "finished") {
-            return "finished";
-        }
-
-
-        // API explicitly says live
-        if (apiStatus === "live") {
-            return "live";
-        }
-
-
-        if (!item.starting_at) {
-            return "upcoming";
-        }
-
-
-        const start =
-            new Date(item.starting_at);
-
-
-        const now =
-            new Date();
-
-
-        if (isNaN(start.getTime())) {
-            return "upcoming";
-        }
-
-
-        // Future match
-        if (start.getTime() > now.getTime()) {
-            return "upcoming";
-        }
-
-
-        /*
-         * যদি API state না দেয় কিন্তু match-এর
-         * starting time ইতিমধ্যে চলে যায়,
-         * তাহলে সম্ভাব্য live window ব্যবহার করছি।
-         *
-         * Football: 3 hours
-         * Cricket: 10 hours
-         */
-
-        const duration =
-            sport === "Cricket"
-                ? 10 * 60 * 60 * 1000
-                : 3 * 60 * 60 * 1000;
-
-
-        const elapsed =
-            now.getTime() - start.getTime();
-
-
-        if (elapsed <= duration) {
-            return "live";
-        }
-
-
+    // Sportmonks explicitly says FINISHED
+    if (apiStatus === "finished") {
         return "finished";
     }
+
+    // If API provides a state but it is not live/finished,
+    // trust the API and keep it upcoming.
+    if (item.state) {
+        return "upcoming";
+    }
+
+    // If there is no state at all, DO NOT guess that it is live.
+    // Use starting time only for upcoming/finished fallback.
+    if (!item.starting_at) {
+        return "upcoming";
+    }
+
+    const start =
+        new Date(item.starting_at);
+
+    const now =
+        new Date();
+
+    if (isNaN(start.getTime())) {
+        return "upcoming";
+    }
+
+    // Future match
+    if (start.getTime() > now.getTime()) {
+        return "upcoming";
+    }
+
+    // Do NOT automatically call an old match LIVE.
+    return "finished";
+}
 
 
     // ==========================================
