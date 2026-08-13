@@ -1,0 +1,26 @@
+[
+  {
+    "id": "event-001",
+    "sport": "Cricket",
+    "tournament": "Asia Cup Live T20",
+    "team1": "Bangladesh",
+    "team1Logo": "assets/logo.png",
+    "team2": "India",
+    "team2Logo": "assets/logo.png",
+    "startTime": "2026-08-13T20:00:00",
+    "status": "live",
+    "channelId": "demo-channel-001"
+  },
+  {
+    "id": "event-002",
+    "sport": "Football",
+    "tournament": "Premier League",
+    "team1": "Real Madrid",
+    "team1Logo": "assets/logo.png",
+    "team2": "Barcelona",
+    "team2Logo": "assets/logo.png",
+    "startTime": "2026-08-13T22:30:00",
+    "status": "upcoming",
+    "channelId": "demo-channel-002"
+  }
+]
