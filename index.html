@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HighFy TV</title>
+  <title>HighFy TV - Sports & Live Streaming</title>
+  
+  <!-- PWA Manifest & Theme -->
   <link rel="manifest" href="manifest.json">
-  <!-- Tailwind CSS CDN -->
+  <meta name="theme-color" content="#0b0f19">
+
+  <!-- Tailwind CSS CDN (No external CSS file needed) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- HLS.js for Live Streaming (.m3u8 support) -->
+  <!-- HLS.js for Live Streaming -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body class="bg-[#0b0f19] text-white font-sans max-w-md mx-auto min-h-screen pb-20 border-x border-gray-800 select-none">
@@ -18,7 +22,7 @@
   <header class="flex justify-between items-center p-4 bg-[#0b0f19] sticky top-0 z-50 border-b border-gray-800">
     <div class="flex items-center space-x-3">
       <i class="fa-solid fa-bars text-lg cursor-pointer"></i>
-      <h1 class="font-bold text-lg text-blue-500 tracking-wide">CrexiFy TV</h1>
+      <h1 class="font-bold text-lg text-blue-500 tracking-wide">HighFy TV</h1>
     </div>
     <div class="flex items-center space-x-4 text-gray-300">
       <i class="fa-regular fa-star cursor-pointer hover:text-white"></i>
@@ -33,7 +37,7 @@
     <span class="text-blue-400 font-bold underline cursor-pointer">Update</span>
   </div>
 
-  <!-- Video Player Modal (Shows when clicked) -->
+  <!-- Video Player Modal -->
   <div id="player-container" class="hidden p-3 bg-black sticky top-[57px] z-40">
     <div class="relative w-full aspect-video bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
       <video id="video" controls class="w-full h-full"></video>
@@ -137,16 +141,19 @@
     </button>
   </nav>
 
-  <!-- Live Stream HLS Script -->
+  <!-- JavaScript & Service Worker -->
   <script>
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+
+    // Video Player Stream Controller
     function playStream(url, title) {
       const container = document.getElementById('player-container');
       const video = document.getElementById('video');
       const titleEl = document.getElementById('player-title');
-      if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
-}
-
+      
       container.classList.remove('hidden');
       titleEl.innerText = "Watching: " + title;
 
