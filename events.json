@@ -1,0 +1,65 @@
+[
+  {
+    "id": "evt-001",
+    "sport": "Cricket",
+    "sportIcon": "🏏",
+    "tournament": "One Day Tri Series",
+    "team1": "India A",
+    "team1Flag": "🇮🇳",
+    "team2": "Sri Lanka A",
+    "team2Flag": "🇱🇰",
+    "status": "live",
+    "timeOrTimer": "01:05:27",
+    "isHot": true,
+    "streamUrls": [
+      { "name": "Willow Stream - AQ", "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { "name": "SonyLIV Stream - AQ", "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
+    ]
+  },
+  {
+    "id": "evt-002",
+    "sport": "Cricket",
+    "sportIcon": "🏏",
+    "tournament": "Nordiac Smash 2026",
+    "team1": "Stockholm United",
+    "team1Flag": "🇸🇪",
+    "team2": "Uppsala Tigers",
+    "team2Flag": "🇸🇪",
+    "status": "live",
+    "timeOrTimer": "01:15:27",
+    "isHot": false,
+    "streamUrls": [
+      { "name": "Nordic Stream Feed", "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
+    ]
+  },
+  {
+    "id": "evt-003",
+    "sport": "FIFA Cup",
+    "sportIcon": "🏆",
+    "tournament": "FIFA World Cup || Football",
+    "team1": "Spain",
+    "team1Flag": "🇪🇸",
+    "team2": "Cabo Verde",
+    "team2Flag": "🇨🇻",
+    "status": "upcoming",
+    "timeOrTimer": "09:30 PM",
+    "statusText": "Starts in 3 hours",
+    "isHot": true,
+    "streamUrls": []
+  },
+  {
+    "id": "evt-004",
+    "sport": "WWE",
+    "sportIcon": "🤼",
+    "tournament": "WWE Monday Night RAW",
+    "team1": "RAW",
+    "team1Flag": "🔴",
+    "team2": "RAW",
+    "team2Flag": "🔴",
+    "status": "upcoming",
+    "timeOrTimer": "11:30 PM",
+    "statusText": "Starts in 5 hours",
+    "isHot": false,
+    "streamUrls": []
+  }
+]
