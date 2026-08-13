@@ -143,7 +143,10 @@
       const container = document.getElementById('player-container');
       const video = document.getElementById('video');
       const titleEl = document.getElementById('player-title');
-      
+      if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+
       container.classList.remove('hidden');
       titleEl.innerText = "Watching: " + title;
 
