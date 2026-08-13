@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HighFy TV - Sports & Live Streaming</title>
+  <title>HighFy TV - Live Sports & Events</title>
   
   <!-- PWA Manifest & Theme -->
   <link rel="manifest" href="manifest.json">
@@ -23,107 +23,30 @@
 
   <!-- Slide Navigation Drawer (Sidebar) -->
   <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-black text-white z-50 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto p-5 border-r border-gray-800 shadow-2xl">
-    
-    <!-- App Brand Header in Sidebar -->
     <div class="flex items-center justify-between pb-6 mb-2 border-b border-gray-800">
       <h2 class="text-xl font-bold text-blue-500 tracking-wider">HighFy TV</h2>
       <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white text-lg">✕</button>
     </div>
 
-    <!-- Sidebar Menu List -->
     <ul class="space-y-5 text-sm font-medium">
-      
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-solid fa-tv text-lg w-6 text-center"></i>
-          <span>Network Stream</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-solid fa-bars-staggered text-lg w-6 text-center"></i>
-          <span>Playlists</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-solid fa-window-restore text-lg w-6 text-center"></i>
-          <span>Floating Player</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-solid fa-gear text-lg w-6 text-center"></i>
-          <span>Force Low Quality</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-solid fa-baseball-bat-ball text-lg w-6 text-center"></i>
-          <span>Cricket Score</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-solid fa-futbol text-lg w-6 text-center"></i>
-          <span>Football Score</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="https://t.me/" target="_blank" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-brands fa-telegram text-lg w-6 text-center text-blue-400"></i>
-          <span>Telegram</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-solid fa-envelope text-lg w-6 text-center"></i>
-          <span>Contact US</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-solid fa-globe text-lg w-6 text-center"></i>
-          <span>Website</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-solid fa-share-nodes text-lg w-6 text-center"></i>
-          <span>Share App</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
-          <i class="fa-regular fa-copyright text-lg w-6 text-center"></i>
-          <span>Copyright</span>
-        </a>
-      </li>
-
-      <li class="pt-4 border-t border-gray-800">
-        <a href="#" onclick="alert('Exit App')" class="flex items-center space-x-4 text-red-400 hover:text-red-300 transition">
-          <i class="fa-solid fa-right-from-bracket text-lg w-6 text-center"></i>
-          <span>Exit</span>
-        </a>
-      </li>
-
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-solid fa-tv text-lg w-6 text-center"></i><span>Network Stream</span></a></li>
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-solid fa-bars-staggered text-lg w-6 text-center"></i><span>Playlists</span></a></li>
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-solid fa-window-restore text-lg w-6 text-center"></i><span>Floating Player</span></a></li>
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-solid fa-gear text-lg w-6 text-center"></i><span>Force Low Quality</span></a></li>
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-solid fa-baseball-bat-ball text-lg w-6 text-center"></i><span>Cricket Score</span></a></li>
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-solid fa-futbol text-lg w-6 text-center"></i><span>Football Score</span></a></li>
+      <li><a href="https://t.me/" target="_blank" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-brands fa-telegram text-lg w-6 text-center text-blue-400"></i><span>Telegram</span></a></li>
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-solid fa-envelope text-lg w-6 text-center"></i><span>Contact US</span></a></li>
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-solid fa-globe text-lg w-6 text-center"></i><span>Website</span></a></li>
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-solid fa-share-nodes text-lg w-6 text-center"></i><span>Share App</span></a></li>
+      <li><a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition"><i class="fa-regular fa-copyright text-lg w-6 text-center"></i><span>Copyright</span></a></li>
+      <li class="pt-4 border-t border-gray-800"><a href="#" onclick="alert('Exit App')" class="flex items-center space-x-4 text-red-400 hover:text-red-300 transition"><i class="fa-solid fa-right-from-bracket text-lg w-6 text-center"></i><span>Exit</span></a></li>
     </ul>
   </aside>
 
   <!-- Main Header Section -->
   <header class="flex justify-between items-center p-4 bg-[#0b0f19] sticky top-0 z-40 border-b border-gray-800">
     <div class="flex items-center space-x-3">
-      <!-- Click Menu Icon to Open Sidebar -->
       <i class="fa-solid fa-bars text-lg cursor-pointer hover:text-blue-400 transition" onclick="toggleSidebar()"></i>
       <h1 class="font-bold text-lg text-blue-500 tracking-wide">HighFy TV</h1>
     </div>
@@ -149,82 +72,35 @@
     <p id="player-title" class="text-xs text-blue-400 mt-2 font-medium"></p>
   </div>
 
-  <!-- Filter Pills -->
+  <!-- Dynamic Filter Pills -->
   <div class="flex space-x-2 p-3 overflow-x-auto text-xs font-medium no-scrollbar">
-    <button class="bg-blue-600 text-white px-4 py-1.5 rounded-full whitespace-nowrap">All (7)</button>
-    <button class="bg-[#131927] border border-gray-800 text-gray-300 px-4 py-1.5 rounded-full whitespace-nowrap">Live (2)</button>
-    <button class="bg-[#131927] border border-gray-800 text-gray-300 px-4 py-1.5 rounded-full whitespace-nowrap">Upcoming (5)</button>
-    <button class="bg-[#131927] border border-gray-800 text-gray-300 px-4 py-1.5 rounded-full whitespace-nowrap">Finished</button>
+    <button id="filter-all" onclick="setFilter('all')" class="bg-blue-600 text-white px-4 py-1.5 rounded-full whitespace-nowrap transition">All (<span id="cnt-all">0</span>)</button>
+    <button id="filter-live" onclick="setFilter('live')" class="bg-[#131927] border border-gray-800 text-gray-300 px-4 py-1.5 rounded-full whitespace-nowrap transition">Live (<span id="cnt-live">0</span>)</button>
+    <button id="filter-upcoming" onclick="setFilter('upcoming')" class="bg-[#131927] border border-gray-800 text-gray-300 px-4 py-1.5 rounded-full whitespace-nowrap transition">Upcoming (<span id="cnt-upcoming">0</span>)</button>
+    <button id="filter-finished" onclick="setFilter('finished')" class="bg-[#131927] border border-gray-800 text-gray-300 px-4 py-1.5 rounded-full whitespace-nowrap transition">Finished (<span id="cnt-finished">0</span>)</button>
   </div>
 
-  <!-- Live Matches Section -->
-  <div class="p-3 space-y-3">
-    
-    <!-- Live Match Card 1 -->
-    <div onclick="playStream('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', 'India A vs Sri Lanka A')" 
-         class="bg-[#131927] border border-blue-900/40 hover:border-blue-500 rounded-xl p-3 shadow-md cursor-pointer transition">
-      <div class="text-center text-[11px] text-gray-400 mb-2 font-medium flex justify-center items-center gap-1">
-        <i class="fa-solid fa-baseball-bat-ball text-blue-400"></i> Cricket || One Day Tri Series
-      </div>
-      <div class="flex justify-between items-center px-4 py-1">
-        <div class="flex flex-col items-center">
-          <img src="https://flagcdn.com/w40/in.png" class="w-8 h-8 rounded-full object-cover border border-gray-600">
-          <span class="text-xs font-semibold mt-1">India A</span>
-        </div>
-        <div class="text-center">
-          <span class="bg-red-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold animate-pulse">● LIVE</span>
-          <div class="text-xs text-blue-400 font-mono mt-1 font-bold">01:15:27</div>
-        </div>
-        <div class="flex flex-col items-center">
-          <img src="https://flagcdn.com/w40/lk.png" class="w-8 h-8 rounded-full object-cover border border-gray-600">
-          <span class="text-xs font-semibold mt-1">Sri Lanka A</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Upcoming Match Card 2 -->
-    <div class="bg-[#131927] border border-gray-800 hover:border-blue-500 rounded-xl p-3 shadow-md cursor-pointer transition">
-      <div class="text-center text-[11px] text-gray-400 mb-2 font-medium flex justify-center items-center gap-1">
-        <i class="fa-solid fa-football text-yellow-500"></i> FIFA World Cup || Football
-      </div>
-      <div class="flex justify-between items-center px-4 py-1">
-        <div class="flex flex-col items-center">
-          <img src="https://flagcdn.com/w40/es.png" class="w-8 h-8 rounded-full object-cover border border-gray-600">
-          <span class="text-xs font-semibold mt-1">Spain</span>
-        </div>
-        <div class="text-center">
-          <div class="text-xs font-bold text-gray-200">09:30 PM</div>
-          <div class="text-[10px] text-gray-400 mt-0.5">Starts in 3 hours</div>
-        </div>
-        <div class="flex flex-col items-center">
-          <img src="https://flagcdn.com/w40/cv.png" class="w-8 h-8 rounded-full object-cover border border-gray-600">
-          <span class="text-xs font-semibold mt-1">Cabo Verde</span>
-        </div>
-      </div>
-    </div>
-
+  <!-- Dynamic Match Cards Container -->
+  <div id="matches-container" class="p-3 space-y-3">
+    <!-- Dynamic Cards will render here -->
   </div>
 
-  <!-- Popular Sports Channels Grid -->
+  <!-- Sports Channels Grid -->
   <div class="p-3">
     <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 px-1">Sports Channels</h2>
     <div class="grid grid-cols-3 gap-3">
-      
       <div class="bg-[#131927] border border-gray-800 hover:border-blue-500 rounded-xl p-3 flex flex-col items-center cursor-pointer transition">
         <div class="w-10 h-10 bg-purple-900/60 border border-purple-500 rounded-full flex items-center justify-center font-black text-xs text-purple-300">TNT</div>
         <span class="text-[11px] mt-2 font-medium text-gray-300">TNT Sports</span>
       </div>
-
       <div class="bg-[#131927] border border-gray-800 hover:border-blue-500 rounded-xl p-3 flex flex-col items-center cursor-pointer transition">
         <div class="w-10 h-10 bg-black border border-gray-600 rounded-full flex items-center justify-center font-black text-xs text-white">DAZN</div>
         <span class="text-[11px] mt-2 font-medium text-gray-300">DAZN</span>
       </div>
-
       <div class="bg-[#131927] border border-gray-800 hover:border-blue-500 rounded-xl p-3 flex flex-col items-center cursor-pointer transition">
         <div class="w-10 h-10 bg-red-900/60 border border-red-500 rounded-full flex items-center justify-center font-black text-xs text-red-400">ESPN</div>
         <span class="text-[11px] mt-2 font-medium text-gray-300">ESPN</span>
       </div>
-
     </div>
   </div>
 
@@ -244,23 +120,175 @@
     </button>
   </nav>
 
-  <!-- JavaScript Logics -->
+  <!-- Dynamic Event & Time Logic JavaScript -->
   <script>
-    // PWA Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js');
+    // 1. Matches Data Structure with exact Date/Time (ISO Format or Dynamic Offsets)
+    const now = new Date();
+
+    const matchesList = [
+      {
+        id: 1,
+        title: "Cricket || One Day Tri Series",
+        team1: "India A",
+        flag1: "https://flagcdn.com/w40/in.png",
+        team2: "Sri Lanka A",
+        flag2: "https://flagcdn.com/w40/lk.png",
+        // Started 1 hour ago, ends in 3 hours (Current Status: LIVE)
+        startTime: new Date(now.getTime() - 1 * 60 * 60 * 1000), 
+        endTime: new Date(now.getTime() + 3 * 60 * 60 * 1000),
+        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        icon: "fa-baseball-bat-ball text-blue-400"
+      },
+      {
+        id: 2,
+        title: "FIFA World Cup || Football",
+        team1: "Spain",
+        flag1: "https://flagcdn.com/w40/es.png",
+        team2: "Cabo Verde",
+        flag2: "https://flagcdn.com/w40/cv.png",
+        // Starts in 2 hours 30 minutes from now (Current Status: UPCOMING)
+        startTime: new Date(now.getTime() + 2.5 * 60 * 60 * 1000),
+        endTime: new Date(now.getTime() + 4.5 * 60 * 60 * 1000),
+        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        icon: "fa-futbol text-yellow-500"
+      },
+      {
+        id: 3,
+        title: "WWE || WWE Monday Night RAW",
+        team1: "RAW",
+        flag1: "https://flagcdn.com/w40/us.png",
+        team2: "RAW",
+        flag2: "https://flagcdn.com/w40/us.png",
+        // Starts in 5 hours (Current Status: UPCOMING)
+        startTime: new Date(now.getTime() + 5 * 60 * 60 * 1000),
+        endTime: new Date(now.getTime() + 8 * 60 * 60 * 1000),
+        streamUrl: "",
+        icon: "fa-bolt text-red-500"
+      },
+      {
+        id: 4,
+        title: "T20 Series || International",
+        team1: "Bangladesh",
+        flag1: "https://flagcdn.com/w40/bd.png",
+        team2: "Pakistan",
+        flag2: "https://flagcdn.com/w40/pk.png",
+        // Ended 2 hours ago (Current Status: FINISHED)
+        startTime: new Date(now.getTime() - 6 * 60 * 60 * 1000),
+        endTime: new Date(now.getTime() - 2 * 60 * 60 * 1000),
+        streamUrl: "",
+        icon: "fa-baseball-bat-ball text-green-400"
+      }
+    ];
+
+    let currentFilter = 'all';
+
+    // Helper: Format Time Duration
+    function formatTime(ms) {
+      const totalSec = Math.floor(ms / 1000);
+      const hrs = Math.floor(totalSec / 3600);
+      const mins = Math.floor((totalSec % 3600) / 60);
+      const secs = totalSec % 60;
+      return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Toggle Sidebar Menu Function
+    // Main Function to Render Match Cards Dynamically based on current time
+    function renderMatches() {
+      const container = document.getElementById('matches-container');
+      const currentTime = new Date();
+
+      let counts = { all: matchesList.length, live: 0, upcoming: 0, finished: 0 };
+      let htmlContent = '';
+
+      matchesList.forEach(match => {
+        let status = ''; 
+        let timeDisplayHtml = '';
+
+        if (currentTime < match.startTime) {
+          status = 'upcoming';
+          counts.upcoming++;
+          const diff = match.startTime - currentTime;
+          const startTimeStr = match.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          timeDisplayHtml = `
+            <div class="text-xs font-bold text-gray-200">${startTimeStr}</div>
+            <div class="text-[10px] text-blue-400 mt-0.5">Starts in ${formatTime(diff)}</div>
+          `;
+        } else if (currentTime >= match.startTime && currentTime <= match.endTime) {
+          status = 'live';
+          counts.live++;
+          const elapsedTime = currentTime - match.startTime;
+          timeDisplayHtml = `
+            <span class="bg-red-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold animate-pulse">● LIVE</span>
+            <div class="text-xs text-blue-400 font-mono mt-1 font-bold">${formatTime(elapsedTime)}</div>
+          `;
+        } else {
+          status = 'finished';
+          counts.finished++;
+          timeDisplayHtml = `
+            <span class="bg-gray-800 text-gray-400 text-[9px] px-2 py-0.5 rounded-full font-bold">FINISHED</span>
+            <div class="text-[10px] text-gray-500 mt-1">Match Ended</div>
+          `;
+        }
+
+        // Render card if matches current selected filter
+        if (currentFilter === 'all' || currentFilter === status) {
+          htmlContent += `
+            <div onclick="${match.streamUrl ? `playStream('${match.streamUrl}', '${match.team1} vs ${match.team2}')` : "alert('Stream link not available yet!')"}" 
+                 class="bg-[#131927] border ${status === 'live' ? 'border-blue-900/60 shadow-blue-950/40' : 'border-gray-800'} hover:border-blue-500 rounded-xl p-3 shadow-md cursor-pointer transition">
+              <div class="text-center text-[11px] text-gray-400 mb-2 font-medium flex justify-center items-center gap-1.5">
+                <i class="fa-solid ${match.icon}"></i> ${match.title}
+              </div>
+              <div class="flex justify-between items-center px-4 py-1">
+                <div class="flex flex-col items-center w-20">
+                  <img src="${match.flag1}" class="w-8 h-8 rounded-full object-cover border border-gray-600">
+                  <span class="text-xs font-semibold mt-1 text-center truncate w-full">${match.team1}</span>
+                </div>
+                <div class="text-center flex flex-col items-center">
+                  ${timeDisplayHtml}
+                </div>
+                <div class="flex flex-col items-center w-20">
+                  <img src="${match.flag2}" class="w-8 h-8 rounded-full object-cover border border-gray-600">
+                  <span class="text-xs font-semibold mt-1 text-center truncate w-full">${match.team2}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      // Update Filter Badge Counters
+      document.getElementById('cnt-all').innerText = counts.all;
+      document.getElementById('cnt-live').innerText = counts.live;
+      document.getElementById('cnt-upcoming').innerText = counts.upcoming;
+      document.getElementById('cnt-finished').innerText = counts.finished;
+
+      container.innerHTML = htmlContent || `<div class="text-center text-gray-500 text-xs py-8">No ${currentFilter} matches at this moment.</div>`;
+    }
+
+    // Change Filter Selection
+    function setFilter(filterType) {
+      currentFilter = filterType;
+      ['all', 'live', 'upcoming', 'finished'].forEach(type => {
+        const btn = document.getElementById(`filter-${type}`);
+        if (type === filterType) {
+          btn.className = "bg-blue-600 text-white px-4 py-1.5 rounded-full whitespace-nowrap transition";
+        } else {
+          btn.className = "bg-[#131927] border border-gray-800 text-gray-300 px-4 py-1.5 rounded-full whitespace-nowrap transition";
+        }
+      });
+      renderMatches();
+    }
+
+    // Live Timer Interval (Refreshes Every 1 Second)
+    setInterval(renderMatches, 1000);
+    renderMatches(); // Initial Call
+
+    // Sidebar Toggle Logic
     function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebar-overlay');
-      
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
+      document.getElementById('sidebar').classList.toggle('-translate-x-full');
+      document.getElementById('sidebar-overlay').classList.toggle('hidden');
     }
 
-    // Video Stream Player
+    // Video Stream Player Logic
     function playStream(url, title) {
       const container = document.getElementById('player-container');
       const video = document.getElementById('video');
@@ -273,9 +301,7 @@
         const hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
-          video.play();
-        });
+        hls.on(Hls.Events.MANIFEST_PARSED, function () { video.play(); });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = url;
         video.play();
@@ -287,6 +313,11 @@
       const video = document.getElementById('video');
       video.pause();
       container.classList.add('hidden');
+    }
+
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
     }
   </script>
 </body>
