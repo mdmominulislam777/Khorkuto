@@ -1,0 +1,8 @@
+{
+  "appName": "HighFy TV",
+  "version": "1.0.0",
+  "telegramUrl": "https://t.me/example_channel",
+  "websiteUrl": "https://example.com",
+  "contactUrl": "https://t.me/example_admin",
+  "copyright": "© 2026 HighFy TV. All rights reserved."
+}
