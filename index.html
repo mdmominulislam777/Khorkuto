@@ -9,19 +9,122 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0f19">
 
-  <!-- Tailwind CSS CDN (No external CSS file needed) -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- HLS.js for Live Streaming -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
-<body class="bg-[#0b0f19] text-white font-sans max-w-md mx-auto min-h-screen pb-20 border-x border-gray-800 select-none">
+<body class="bg-[#0b0f19] text-white font-sans max-w-md mx-auto min-h-screen pb-20 border-x border-gray-800 select-none relative overflow-x-hidden">
 
-  <!-- Header Section -->
-  <header class="flex justify-between items-center p-4 bg-[#0b0f19] sticky top-0 z-50 border-b border-gray-800">
+  <!-- Backdrop Overlay for Slide Menu -->
+  <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 z-50 hidden transition-opacity"></div>
+
+  <!-- Slide Navigation Drawer (Sidebar) -->
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-black text-white z-50 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto p-5 border-r border-gray-800 shadow-2xl">
+    
+    <!-- App Brand Header in Sidebar -->
+    <div class="flex items-center justify-between pb-6 mb-2 border-b border-gray-800">
+      <h2 class="text-xl font-bold text-blue-500 tracking-wider">HighFy TV</h2>
+      <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white text-lg">✕</button>
+    </div>
+
+    <!-- Sidebar Menu List -->
+    <ul class="space-y-5 text-sm font-medium">
+      
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-solid fa-tv text-lg w-6 text-center"></i>
+          <span>Network Stream</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-solid fa-bars-staggered text-lg w-6 text-center"></i>
+          <span>Playlists</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-solid fa-window-restore text-lg w-6 text-center"></i>
+          <span>Floating Player</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-solid fa-gear text-lg w-6 text-center"></i>
+          <span>Force Low Quality</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-solid fa-baseball-bat-ball text-lg w-6 text-center"></i>
+          <span>Cricket Score</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-solid fa-futbol text-lg w-6 text-center"></i>
+          <span>Football Score</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="https://t.me/" target="_blank" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-brands fa-telegram text-lg w-6 text-center text-blue-400"></i>
+          <span>Telegram</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-solid fa-envelope text-lg w-6 text-center"></i>
+          <span>Contact US</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-solid fa-globe text-lg w-6 text-center"></i>
+          <span>Website</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-solid fa-share-nodes text-lg w-6 text-center"></i>
+          <span>Share App</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center space-x-4 text-gray-200 hover:text-blue-400 transition">
+          <i class="fa-regular fa-copyright text-lg w-6 text-center"></i>
+          <span>Copyright</span>
+        </a>
+      </li>
+
+      <li class="pt-4 border-t border-gray-800">
+        <a href="#" onclick="alert('Exit App')" class="flex items-center space-x-4 text-red-400 hover:text-red-300 transition">
+          <i class="fa-solid fa-right-from-bracket text-lg w-6 text-center"></i>
+          <span>Exit</span>
+        </a>
+      </li>
+
+    </ul>
+  </aside>
+
+  <!-- Main Header Section -->
+  <header class="flex justify-between items-center p-4 bg-[#0b0f19] sticky top-0 z-40 border-b border-gray-800">
     <div class="flex items-center space-x-3">
-      <i class="fa-solid fa-bars text-lg cursor-pointer"></i>
+      <!-- Click Menu Icon to Open Sidebar -->
+      <i class="fa-solid fa-bars text-lg cursor-pointer hover:text-blue-400 transition" onclick="toggleSidebar()"></i>
       <h1 class="font-bold text-lg text-blue-500 tracking-wide">HighFy TV</h1>
     </div>
     <div class="flex items-center space-x-4 text-gray-300">
@@ -38,7 +141,7 @@
   </div>
 
   <!-- Video Player Modal -->
-  <div id="player-container" class="hidden p-3 bg-black sticky top-[57px] z-40">
+  <div id="player-container" class="hidden p-3 bg-black sticky top-[57px] z-30">
     <div class="relative w-full aspect-video bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
       <video id="video" controls class="w-full h-full"></video>
       <button onclick="closePlayer()" class="absolute top-2 right-2 bg-red-600 text-white w-7 h-7 rounded-full text-xs font-bold">✕</button>
@@ -126,7 +229,7 @@
   </div>
 
   <!-- Bottom Navigation Bar -->
-  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0b0f19] border-t border-gray-800 flex justify-around py-2.5 z-50">
+  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0b0f19] border-t border-gray-800 flex justify-around py-2.5 z-40">
     <button class="flex flex-col items-center text-blue-500 space-y-1">
       <i class="fa-solid fa-tower-broadcast text-base"></i>
       <span class="text-[10px] font-medium">Events</span>
@@ -141,14 +244,23 @@
     </button>
   </nav>
 
-  <!-- JavaScript & Service Worker -->
+  <!-- JavaScript Logics -->
   <script>
-    // Register Service Worker for PWA
+    // PWA Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js');
     }
 
-    // Video Player Stream Controller
+    // Toggle Sidebar Menu Function
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    // Video Stream Player
     function playStream(url, title) {
       const container = document.getElementById('player-container');
       const video = document.getElementById('video');
