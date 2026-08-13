@@ -5,17 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HighFy TV</title>
     
-    <!-- STRICT RELATIVE PATH TO ROOT STYLESHEET -->
     <link rel="stylesheet" href="./style.css">
-
-    <!-- FontAwesome for Crisp UI Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- HLS.js for Streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
-    <!-- STRICT RELATIVE PATH TO DEFERRED JS -->
+    <!-- API CONFIG & ENGINE (Loaded in correct sequence) -->
+    <script src="./config.js"></script>
+    <script src="./sportmonks.js"></script>
     <script src="./script.js" defer></script>
 </head>
+
 <body>
 
     <!-- TOP COMPACT HEADER -->
