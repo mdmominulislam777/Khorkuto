@@ -907,3 +907,17 @@ window.sportmonksEngine =
 console.log(
     "HighFy TV Sportmonks Engine Ready"
 );
+setTimeout(() => {
+    console.log("====== HIGHFY TV EVENTS DEBUG ======");
+    console.table(
+        eventsData.map(e => ({
+            id: e.id,
+            sport: e.sport,
+            team1: e.team1,
+            team2: e.team2,
+            status: e.status,
+            time: e.timeOrTimer,
+            startingAt: e.startingAt
+        }))
+    );
+}, 5000);
