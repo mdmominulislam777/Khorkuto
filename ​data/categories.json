@@ -1,0 +1,21 @@
+[
+  { "id": "worldcup", "name": "World Cup 2026", "flag": "🏆" },
+  { "id": "cuphighlights", "name": "Cup Highlights", "flag": "⚽" },
+  { "id": "sports", "name": "Sports", "flag": "🏀" },
+  { "id": "india", "name": "India", "flag": "🇮🇳" },
+  { "id": "bengali", "name": "Bengali", "flag": "🇧🇩" },
+  { "id": "pakistan", "name": "Pakistan", "flag": "🇵🇰" },
+  { "id": "afghanistan", "name": "Afghanistan", "flag": "🇦🇫" },
+  { "id": "nepal", "name": "Nepal", "flag": "🇳🇵" },
+  { "id": "france", "name": "France", "flag": "🇫🇷" },
+  { "id": "germany", "name": "Germany", "flag": "🇩🇪" },
+  { "id": "italy", "name": "Italy", "flag": "🇮🇹" },
+  { "id": "switzerland", "name": "Switzerland", "flag": "🇨🇭" },
+  { "id": "spain", "name": "Spain", "flag": "🇪🇸" },
+  { "id": "morocco", "name": "Morocco", "flag": "🇲🇦" },
+  { "id": "kids", "name": "Kids", "flag": "🧸" },
+  { "id": "news", "name": "News", "flag": "📰" },
+  { "id": "tataplay", "name": "TataPlay WW", "flag": "📺" },
+  { "id": "jiotv", "name": "JioTV+ IND", "flag": "📱" }
+]
+
