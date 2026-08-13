@@ -1,153 +1,658 @@
 /**
  * HighFy TV - Sportmonks API Engine
- * Handles Data Fetching, Normalization, and Status Mapping
+ * Football + Cricket
  */
 
 class SportmonksService {
+
     constructor() {
-        this.apiToken = CONFIG.SPORTMONKS_API_TOKEN;
-        this.baseUrl = CONFIG.BASE_URL;
+        this.apiToken =
+            typeof CONFIG !== "undefined"
+                ? CONFIG.SPORTMONKS_API_TOKEN
+                : "";
+
+        this.baseUrl =
+            typeof CONFIG !== "undefined"
+                ? CONFIG.BASE_URL
+                : "https://api.sportmonks.com/v3";
+
+        this.timezone =
+            typeof CONFIG !== "undefined"
+                ? CONFIG.TIMEZONE
+                : "Asia/Dhaka";
     }
 
-    /**
-     * Map Sportmonks State Shortcodes to App Internal Statuses
-     */
+
+    // ==========================================
+    // STATUS MAPPING
+    // ==========================================
+
     mapMatchStatus(stateCode) {
-        if (!stateCode) return "upcoming";
-        
-        const code = stateCode.toUpperCase();
 
-        // Live Match Statuses
-        const liveCodes = ["INPLAY", "INPLAY_1ST_HALF", "INPLAY_2ND_HALF", "HT", "ET", "PEN_BREAK", "LIVE", "1ST_INNINGS", "2ND_INNINGS"];
-        // Finished Match Statuses
-        const finishedCodes = ["FT", "AET", "FT_PEN", "FINISHED", "CANCL", "POSTP"];
+        if (!stateCode) {
+            return "upcoming";
+        }
 
-        if (liveCodes.includes(code)) return "live";
-        if (finishedCodes.includes(code)) return "finished";
+        const code =
+            String(stateCode).toUpperCase().trim();
+
+
+        const liveCodes = [
+            "INPLAY",
+            "INPLAY_1ST_HALF",
+            "INPLAY_2ND_HALF",
+            "HT",
+            "ET",
+            "PEN_BREAK",
+            "LIVE",
+            "1ST_INNINGS",
+            "2ND_INNINGS",
+            "BREAK",
+            "INT"
+        ];
+
+
+        const finishedCodes = [
+            "FT",
+            "AET",
+            "FT_PEN",
+            "FINISHED",
+            "CANCL",
+            "CANCELLED",
+            "POSTP",
+            "POSTPONED"
+        ];
+
+
+        if (liveCodes.includes(code)) {
+            return "live";
+        }
+
+
+        if (finishedCodes.includes(code)) {
+            return "finished";
+        }
+
+
         return "upcoming";
     }
 
-    /**
-     * Fetch Football Fixtures & Live Scores
-     */
-    async fetchFootballEvents() {
-        try {
-            // Fetch live scores + today's fixtures with participating teams & league info
-            const url = `${this.baseUrl}/football/fixtures?api_token=${this.apiToken}&include=participants;league;state&timezone=${CONFIG.TIMEZONE}`;
-            
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Sportmonks API Error: ${response.statusText}`);
-            
-            const result = await response.json();
-            return this.normalizeFootballData(result.data || []);
-        } catch (error) {
-            console.error("Failed to fetch Football data from Sportmonks:", error);
-            return [];
-        }
+
+    // ==========================================
+    // TOKEN CHECK
+    // ==========================================
+
+    hasToken() {
+
+        return (
+            typeof this.apiToken === "string" &&
+            this.apiToken.trim().length > 0
+        );
+
     }
 
-    /**
-     * Fetch Cricket Fixtures & Live Scores
-     */
-    async fetchCricketEvents() {
-        try {
-            const url = `${this.baseUrl}/cricket/fixtures?api_token=${this.apiToken}&include=localteam;visitorteam;league;state&timezone=${CONFIG.TIMEZONE}`;
-            
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Sportmonks API Error: ${response.statusText}`);
-            
-            const result = await response.json();
-            return this.normalizeCricketData(result.data || []);
-        } catch (error) {
-            console.error("Failed to fetch Cricket data from Sportmonks:", error);
+
+    // ==========================================
+    // COMMON API REQUEST
+    // ==========================================
+
+    async request(endpoint, label = "API") {
+
+        if (!this.hasToken()) {
+
+            console.warn(
+                `Sportmonks ${label}: API token is empty.`
+            );
+
             return [];
         }
+
+
+        const separator =
+            endpoint.includes("?")
+                ? "&"
+                : "?";
+
+
+        const url =
+            `${this.baseUrl}${endpoint}` +
+            `${separator}api_token=${encodeURIComponent(this.apiToken)}`;
+
+
+        try {
+
+            console.log(
+                `Sportmonks ${label}: requesting data...`
+            );
+
+
+            const response =
+                await fetch(url);
+
+
+            console.log(
+                `Sportmonks ${label} HTTP status:`,
+                response.status
+            );
+
+
+            const text =
+                await response.text();
+
+
+            let result;
+
+            try {
+
+                result =
+                    text ? JSON.parse(text) : {};
+
+            } catch (jsonError) {
+
+                console.error(
+                    `Sportmonks ${label}: Invalid JSON response`,
+                    text
+                );
+
+                return [];
+
+            }
+
+
+            if (!response.ok) {
+
+                console.error(
+                    `Sportmonks ${label} API Error:`,
+                    result
+                );
+
+                return [];
+
+            }
+
+
+            if (
+                result &&
+                result.message &&
+                !result.data
+            ) {
+
+                console.warn(
+                    `Sportmonks ${label}:`,
+                    result.message
+                );
+
+            }
+
+
+            return Array.isArray(result.data)
+                ? result.data
+                : [];
+
+        } catch (error) {
+
+            console.error(
+                `Sportmonks ${label} Network Error:`,
+                error
+            );
+
+            return [];
+
+        }
+
     }
 
-    /**
-     * Format Football raw API response into standard HighFy Event Schema
-     */
+
+    // ==========================================
+    // FOOTBALL LIVE
+    // ==========================================
+
+    async fetchFootballLive() {
+
+        const data =
+            await this.request(
+                "/football/livescores",
+                "Football Live"
+            );
+
+
+        return this.normalizeFootballData(data);
+
+    }
+
+
+    // ==========================================
+    // FOOTBALL FIXTURES
+    // ==========================================
+
+    async fetchFootballFixtures() {
+
+        const data =
+            await this.request(
+                "/football/fixtures/date/today" +
+                "?include=participants;league;state" +
+                `&timezone=${encodeURIComponent(this.timezone)}`,
+                "Football Fixtures"
+            );
+
+
+        return this.normalizeFootballData(data);
+
+    }
+
+
+    // ==========================================
+    // CRICKET FIXTURES
+    // ==========================================
+
+    async fetchCricketFixtures() {
+
+        const data =
+            await this.request(
+                "/cricket/fixtures/date/today" +
+                "?include=localteam;visitorteam;league;state" +
+                `&timezone=${encodeURIComponent(this.timezone)}`,
+                "Cricket Fixtures"
+            );
+
+
+        return this.normalizeCricketData(data);
+
+    }
+
+
+    // ==========================================
+    // FOOTBALL NORMALIZER
+    // ==========================================
+
     normalizeFootballData(rawData) {
-        return rawData.map(item => {
-            const participants = item.participants || [];
-            const team1Obj = participants[0] || {};
-            const team2Obj = participants[1] || {};
-            const stateCode = item.state ? item.state.short_name : "NS";
-            const appStatus = this.mapMatchStatus(stateCode);
 
-            // Format Match Time or Live Minute
-            let timeOrTimer = "00:00";
-            if (appStatus === "live") {
-                timeOrTimer = item.minute ? `${item.minute}'` : "LIVE";
+        if (!Array.isArray(rawData)) {
+            return [];
+        }
+
+
+        return rawData.map(item => {
+
+            const participants =
+                Array.isArray(item.participants)
+                    ? item.participants
+                    : [];
+
+
+            const team1Obj =
+                participants[0] || {};
+
+            const team2Obj =
+                participants[1] || {};
+
+
+            const stateCode =
+                item.state?.short_name ||
+                item.state?.name ||
+                "NS";
+
+
+            const status =
+                this.mapMatchStatus(
+                    stateCode
+                );
+
+
+            let timeOrTimer =
+                "TBD";
+
+
+            if (status === "live") {
+
+                timeOrTimer =
+                    item.minute
+                        ? `${item.minute}'`
+                        : "LIVE";
+
             } else if (item.starting_at) {
-                const matchTime = new Date(item.starting_at);
-                timeOrTimer = matchTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                const date =
+                    new Date(item.starting_at);
+
+
+                timeOrTimer =
+                    date.toLocaleTimeString(
+                        "en-GB",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            timeZone: this.timezone
+                        }
+                    );
+
             }
 
+
             return {
-                id: `sm-fb-${item.id}`,
-                sport: "Football",
-                sportIcon: "⚽",
-                tournament: item.league ? item.league.name : "Football League",
-                team1: team1Obj.name || "Home Team",
-                team1Flag: team1Obj.image_path ? `<img src="${team1Obj.image_path}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : "⚽",
-                team2: team2Obj.name || "Away Team",
-                team2Flag: team2Obj.image_path ? `<img src="${team2Obj.image_path}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : "⚽",
-                status: appStatus,
-                timeOrTimer: timeOrTimer,
-                statusText: appStatus === "upcoming" ? `Starts at ${timeOrTimer}` : (appStatus === "finished" ? "Full Time" : "In Play"),
-                isHot: appStatus === "live",
-                streamUrls: item.stream_urls || []
+
+                id:
+                    `sm-fb-${item.id}`,
+
+                sport:
+                    "Football",
+
+                sportIcon:
+                    "⚽",
+
+                tournament:
+                    item.league?.name ||
+                    "Football",
+
+                team1:
+                    team1Obj.name ||
+                    "Home Team",
+
+                team1Flag:
+                    this.makeTeamLogo(
+                        team1Obj.image_path,
+                        "⚽"
+                    ),
+
+                team2:
+                    team2Obj.name ||
+                    "Away Team",
+
+                team2Flag:
+                    this.makeTeamLogo(
+                        team2Obj.image_path,
+                        "⚽"
+                    ),
+
+                status:
+                    status,
+
+                timeOrTimer:
+                    timeOrTimer,
+
+                statusText:
+                    status === "live"
+                        ? "In Play"
+                        : status === "finished"
+                            ? "Full Time"
+                            : `Starts at ${timeOrTimer}`,
+
+                isHot:
+                    status === "live",
+
+                streamUrls:
+                    item.stream_urls || []
+
             };
+
         });
+
     }
 
-    /**
-     * Format Cricket raw API response
-     */
+
+    // ==========================================
+    // CRICKET NORMALIZER
+    // ==========================================
+
     normalizeCricketData(rawData) {
-        return rawData.map(item => {
-            const team1Obj = item.localteam || {};
-            const team2Obj = item.visitorteam || {};
-            const stateCode = item.state ? item.state.short_name : "NS";
-            const appStatus = this.mapMatchStatus(stateCode);
 
-            let timeOrTimer = "00:00";
-            if (item.starting_at) {
-                const matchTime = new Date(item.starting_at);
-                timeOrTimer = matchTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (!Array.isArray(rawData)) {
+            return [];
+        }
+
+
+        return rawData.map(item => {
+
+            const team1Obj =
+                item.localteam ||
+                item.local_team ||
+                {};
+
+
+            const team2Obj =
+                item.visitorteam ||
+                item.visitor_team ||
+                {};
+
+
+            const stateCode =
+                item.state?.short_name ||
+                item.state?.name ||
+                "NS";
+
+
+            const status =
+                this.mapMatchStatus(
+                    stateCode
+                );
+
+
+            let timeOrTimer =
+                "TBD";
+
+
+            if (
+                status === "live"
+            ) {
+
+                timeOrTimer =
+                    "LIVE";
+
+            } else if (
+                item.starting_at
+            ) {
+
+                const date =
+                    new Date(item.starting_at);
+
+
+                timeOrTimer =
+                    date.toLocaleTimeString(
+                        "en-GB",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            timeZone: this.timezone
+                        }
+                    );
+
             }
 
+
             return {
-                id: `sm-cr-${item.id}`,
-                sport: "Cricket",
-                sportIcon: "🏏",
-                tournament: item.league ? item.league.name : "Cricket Series",
-                team1: team1Obj.name || "Team A",
-                team1Flag: team1Obj.image_path ? `<img src="${team1Obj.image_path}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : "🏏",
-                team2: team2Obj.name || "Team B",
-                team2Flag: team2Obj.image_path ? `<img src="${team2Obj.image_path}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : "🏏",
-                status: appStatus,
-                timeOrTimer: appStatus === "live" ? "LIVE" : timeOrTimer,
-                statusText: appStatus === "upcoming" ? `Starts at ${timeOrTimer}` : (appStatus === "finished" ? "Match Ended" : "Live Score"),
-                isHot: appStatus === "live",
-                streamUrls: item.stream_urls || []
+
+                id:
+                    `sm-cr-${item.id}`,
+
+                sport:
+                    "Cricket",
+
+                sportIcon:
+                    "🏏",
+
+                tournament:
+                    item.league?.name ||
+                    "Cricket",
+
+                team1:
+                    team1Obj.name ||
+                    "Team A",
+
+                team1Flag:
+                    this.makeTeamLogo(
+                        team1Obj.image_path,
+                        "🏏"
+                    ),
+
+                team2:
+                    team2Obj.name ||
+                    "Team B",
+
+                team2Flag:
+                    this.makeTeamLogo(
+                        team2Obj.image_path,
+                        "🏏"
+                    ),
+
+                status:
+                    status,
+
+                timeOrTimer:
+                    timeOrTimer,
+
+                statusText:
+                    status === "live"
+                        ? "Live Score"
+                        : status === "finished"
+                            ? "Match Ended"
+                            : `Starts at ${timeOrTimer}`,
+
+                isHot:
+                    status === "live",
+
+                streamUrls:
+                    item.stream_urls || []
+
             };
+
         });
+
     }
 
-    /**
-     * Master Fetch Engine - Loads both Football & Cricket Data
-     */
-    async getAllEvents() {
-        const [football, cricket] = await Promise.all([
-            this.fetchFootballEvents(),
-            this.fetchCricketEvents()
-        ]);
-        return [...football, ...cricket];
+
+    // ==========================================
+    // TEAM LOGO
+    // ==========================================
+
+    makeTeamLogo(imagePath, fallback) {
+
+        if (!imagePath) {
+            return fallback;
+        }
+
+
+        const safeUrl =
+            String(imagePath)
+                .replace(/"/g, "&quot;");
+
+
+        return `
+            <img
+                src="${safeUrl}"
+                alt=""
+                style="
+                    width:100%;
+                    height:100%;
+                    border-radius:50%;
+                    object-fit:cover;
+                "
+                loading="lazy"
+            >
+        `;
+
     }
+
+
+    // ==========================================
+    // MASTER EVENT ENGINE
+    // ==========================================
+
+    async getAllEvents() {
+
+        if (!this.hasToken()) {
+
+            console.warn(
+                "Sportmonks: No API token configured."
+            );
+
+            return [];
+
+        }
+
+
+        try {
+
+            const results =
+                await Promise.allSettled([
+
+                    this.fetchFootballLive(),
+
+                    this.fetchFootballFixtures(),
+
+                    this.fetchCricketFixtures()
+
+                ]);
+
+
+            const footballLive =
+                results[0].status === "fulfilled"
+                    ? results[0].value
+                    : [];
+
+
+            const footballFixtures =
+                results[1].status === "fulfilled"
+                    ? results[1].value
+                    : [];
+
+
+            const cricketFixtures =
+                results[2].status === "fulfilled"
+                    ? results[2].value
+                    : [];
+
+
+            const combined = [
+                ...footballLive,
+                ...footballFixtures,
+                ...cricketFixtures
+            ];
+
+
+            // Remove duplicate matches
+            const unique =
+                Array.from(
+                    new Map(
+                        combined.map(event => [
+                            event.id,
+                            event
+                        ])
+                    ).values()
+                );
+
+
+            console.log(
+                "Sportmonks total events:",
+                unique.length
+            );
+
+
+            return unique;
+
+        } catch (error) {
+
+            console.error(
+                "Sportmonks master engine error:",
+                error
+            );
+
+            return [];
+
+        }
+
+    }
+
 }
 
-// Global Export
-window.sportmonksEngine = new SportmonksService();
 
+// ==========================================
+// GLOBAL ENGINE
+// ==========================================
+
+window.sportmonksEngine =
+    new SportmonksService();
+
+console.log(
+    "HighFy TV Sportmonks Engine Loaded:",
+    window.sportmonksEngine
+);
