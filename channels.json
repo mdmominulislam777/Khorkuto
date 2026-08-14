@@ -1,110 +1,32 @@
 [
   {
-    "id": "tnt-sports",
-    "name": "TNT Sports",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    "id": "channel-1",
+    "name": "Sample Sports HD",
+    "category": "sports",
+    "logo": "https://placehold.co/120x120/141414/E50914?text=SPT",
+    "url": "",
+    "language": "English",
+    "country": "International",
+    "quality": "HD"
   },
   {
-    "id": "dazn",
-    "name": "DAZN",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "FHD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    "id": "channel-2",
+    "name": "Sample Bangla TV",
+    "category": "bangla",
+    "logo": "https://placehold.co/120x120/141414/E50914?text=BAN",
+    "url": "",
+    "language": "Bangla",
+    "country": "Bangladesh",
+    "quality": "HD"
   },
   {
-    "id": "bein-sports",
-    "name": "beIN Sports",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    "id": "espn",
-    "name": "ESPN",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    "id": "sky-sports",
-    "name": "Sky Sports",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "FHD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    "id": "sky-austria",
-    "name": "Sky Austria",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    "id": "laliga",
-    "name": "LaLiga",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    "id": "fubo-sports",
-    "name": "Fubo Sports",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    "id": "premier-sports",
-    "name": "Premier Sports",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    "id": "cbs-sports",
-    "name": "CBS Sports",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    "id": "tsn",
-    "name": "TSN",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-  },
-  {
-    "id": "fancode",
-    "name": "FanCode",
-    "logo": "",
-    "category": "Sports",
-    "status": "live",
-    "quality": "HD",
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    "id": "channel-3",
+    "name": "Sample News 24",
+    "category": "news",
+    "logo": "https://placehold.co/120x120/141414/E50914?text=NEWS",
+    "url": "",
+    "language": "English",
+    "country": "International",
+    "quality": "SD"
   }
 ]
