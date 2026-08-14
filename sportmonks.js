@@ -1,946 +1,206 @@
 /**
- * HighFy TV - Sportmonks API Engine
- * Dynamic Bangladesh Time
- * Football + Cricket
+ * HIGHFY TV — Sportmonks API integration
+ * ---------------------------------------------------------------
+ * This module only ever returns data that actually came back from
+ * Sportmonks. It never invents matches, scores, or status. If the
+ * token is missing or a request fails, callers get a clear error
+ * instead of a silently-faked result.
+ *
+ * IMPORTANT — Sportmonks is split into separate products per sport,
+ * each with its own base path and its own subscription:
+ *   Football   -> /v3/football/...
+ *   Cricket    -> /v3/cricket/...
+ *   Basketball -> /v3/basketball/...
+ *   Tennis     -> /v3/tennis/...
+ * "WWE" is scripted entertainment, not a tracked sport, so no
+ * Sportmonks endpoint exists for it — the app is upfront about that
+ * instead of guessing. "FIFA" is treated as football competitions
+ * that belong to FIFA (World Cup, qualifiers, Club World Cup, etc.)
+ * filtered from the football endpoint, not a separate product.
+ *
+ * Your plan must include the relevant product or these calls will
+ * return a 4xx from Sportmonks — that response is surfaced as-is.
+ * ---------------------------------------------------------------
  */
 
-class SportmonksService {
+const SPORTMONKS = (() => {
+  const SPORTS = {
+    football: { path: "football", label: "Football" },
+    cricket: { path: "cricket", label: "Cricket" },
+    basketball: { path: "basketball", label: "Basketball" },
+    tennis: { path: "tennis", label: "Tennis" },
+    fifa: { path: "football", label: "FIFA", fifaOnly: true },
+    wwe: { unsupported: true, label: "WWE" },
+  };
+
+  function hasToken() {
+    return Boolean(CONFIG.SPORTMONKS_API_TOKEN && CONFIG.SPORTMONKS_API_TOKEN.trim().length > 0);
+  }
+
+  function todayInTimezone() {
+    // en-CA gives YYYY-MM-DD directly, which is what Sportmonks expects.
+    return new Date().toLocaleDateString("en-CA", { timeZone: CONFIG.TIMEZONE });
+  }
+
+  /**
+   * Normalizes whatever Sportmonks reports as the fixture/match state
+   * into exactly one of: "LIVE", "UPCOMING", "FINISHED", "UNKNOWN".
+   * We only ever trust the API's own state field — never the clock.
+   */
+  function normalizeStatus(rawState) {
+    if (!rawState) return "UNKNOWN";
+    const s = String(rawState).toUpperCase();
 
-    constructor() {
-        this.apiToken =
-            typeof CONFIG !== "undefined"
-                ? CONFIG.SPORTMONKS_API_TOKEN
-                : "";
-
-        this.baseUrl =
-            typeof CONFIG !== "undefined"
-                ? CONFIG.BASE_URL
-                : "https://api.sportmonks.com/v3";
-
-        this.timezone = "Asia/Dhaka";
-    }
-
-
-    // ==========================================
-    // TOKEN
-    // ==========================================
-
-    hasToken() {
-        return (
-            typeof this.apiToken === "string" &&
-            this.apiToken.trim().length > 0
-        );
-    }
-
-
-    // ==========================================
-    // CURRENT BANGLADESH DATE
-    // ==========================================
-
-    getDhakaDate() {
-
-        const parts = new Intl.DateTimeFormat(
-            "en-CA",
-            {
-                timeZone: this.timezone,
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit"
-            }
-        ).formatToParts(new Date());
-
-        const obj = {};
-
-        parts.forEach(part => {
-            if (part.type !== "literal") {
-                obj[part.type] = part.value;
-            }
-        });
-
-        return `${obj.year}-${obj.month}-${obj.day}`;
-    }
-
-
-    // ==========================================
-    // CURRENT BANGLADESH TIME
-    // ==========================================
-
-    getDhakaNow() {
-        return new Date();
-    }
-
-
-    // ==========================================
-    // API REQUEST
-    // ==========================================
-
-    async request(endpoint, label) {
-
-        if (!this.hasToken()) {
-
-            console.warn(
-                "HighFy TV: Sportmonks API Token is empty."
-            );
-
-            return [];
-        }
-
-
-        const separator =
-            endpoint.includes("?")
-                ? "&"
-                : "?";
-
-
-        const url =
-            `${this.baseUrl}${endpoint}` +
-            `${separator}api_token=${encodeURIComponent(
-                this.apiToken
-            )}`;
-
-
-        try {
-
-            console.log(
-                `Sportmonks ${label}:`,
-                endpoint
-            );
-
-
-            const response =
-                await fetch(url);
-
-
-            console.log(
-                `Sportmonks ${label} status:`,
-                response.status
-            );
-
-
-            const text =
-                await response.text();
-
-
-            let result = {};
-
-            try {
-                result =
-                    text ? JSON.parse(text) : {};
-            } catch (error) {
-
-                console.error(
-                    `Sportmonks ${label}: Invalid JSON`,
-                    text
-                );
-
-                return [];
-            }
-
-
-            if (!response.ok) {
-
-                console.error(
-                    `Sportmonks ${label} Error:`,
-                    result
-                );
-
-                return [];
-            }
-
-
-            if (!Array.isArray(result.data)) {
-
-                console.warn(
-                    `Sportmonks ${label}: No data array`
-                );
-
-                return [];
-            }
-
-
-            return result.data;
-
-
-        } catch (error) {
-
-            console.error(
-                `Sportmonks ${label} Network Error:`,
-                error
-            );
-
-            return [];
-        }
-    }
-
-
-    // ==========================================
-    // STATUS MAPPING
-    // ==========================================
-
-    mapMatchStatus(state) {
-
-        if (!state) {
-            return null;
-        }
-
-
-        const raw =
-            typeof state === "string"
-                ? state
-                : (
-                    state.short_name ||
-                    state.name ||
-                    state.state ||
-                    ""
-                );
-
-
-        const code =
-            String(raw)
-                .toUpperCase()
-                .trim();
-
-
-        // LIVE
-        const liveCodes = [
-
-            "LIVE",
-            "INPLAY",
-            "IN_PLAY",
-
-            "1ST_HALF",
-            "2ND_HALF",
-
-            "INPLAY_1ST_HALF",
-            "INPLAY_2ND_HALF",
-
-            "HT",
-            "HALF_TIME",
-
-            "ET",
-            "EXTRA_TIME",
-
-            "PEN_BREAK",
-            "PENALTIES",
-
-            "1ST_INNINGS",
-            "2ND_INNINGS",
-
-            "BREAK",
-            "INT",
-            "INNINGS_BREAK"
-
-        ];
-
-
-        // FINISHED
-        const finishedCodes = [
-
-            "FT",
-            "AET",
-            "FT_PEN",
-            "FINISHED",
-            "FULL_TIME",
-            "ENDED",
-
-            "CANCL",
-            "CANCELLED",
-            "CANCELED",
-
-            "POSTP",
-            "POSTPONED",
-
-            "ABANDONED"
-
-        ];
-
-
-        if (liveCodes.includes(code)) {
-            return "live";
-        }
-
-
-        if (finishedCodes.includes(code)) {
-            return "finished";
-        }
-
-
-        return null;
-    }
-
-
-    // ==========================================
-    // SMART STATUS
-    // ==========================================
-
-calculateStatus(item, sport) {
-
-    const state = item.state || {};
-
-    const stateCode = String(
-        state.short_name ||
-        state.name ||
-        state.code ||
-        ""
-    ).toUpperCase().trim();
-
-    console.log(
-        "MATCH STATE:",
-        item.id,
-        item.name,
-        state
-    );
-
-    // LIVE — only when API explicitly reports a live state
     const liveStates = [
-        "LIVE",
-        "INPLAY",
-        "IN_PLAY",
-        "1H",
-        "2H",
-        "HT",
-        "ET",
-        "PEN",
-        "PEN_BREAK",
-        "1ST_INNINGS",
-        "2ND_INNINGS",
-        "INNINGS_BREAK"
+      "LIVE", "INPLAY", "IN_PLAY", "1ST_HALF", "2ND_HALF", "HT", "HALFTIME",
+      "ET", "EXTRA_TIME", "PEN_LIVE", "PENALTIES", "INT", "INNINGS_BREAK",
+      "IN_PROGRESS", "STARTED",
     ];
-
-    // FINISHED
+    const notStartedStates = [
+      "NS", "NOT_STARTED", "SCHEDULED", "TBA", "FIXTURE_NOT_STARTED", "UPCOMING",
+    ];
     const finishedStates = [
-        "FT",
-        "AET",
-        "FT_PEN",
-        "FINISHED",
-        "FULL_TIME",
-        "ENDED"
+      "FT", "FT_PEN", "AET", "FINISHED", "ENDED", "AWARDED", "CANCELLED",
+      "CANCELED", "POSTPONED", "ABANDONED", "WO", "COMPLETED",
     ];
 
-    // CANCELLED / POSTPONED
-    const cancelledStates = [
-        "CANCL",
-        "CANCELLED",
-        "CANCELED",
-        "POSTP",
-        "POSTPONED",
-        "ABANDONED"
-    ];
+    if (liveStates.includes(s)) return "LIVE";
+    if (notStartedStates.includes(s)) return "UPCOMING";
+    if (finishedStates.includes(s)) return "FINISHED";
+    return "UNKNOWN";
+  }
 
-    if (liveStates.includes(stateCode)) {
-        return "live";
+  async function apiGet(path, params = {}) {
+    if (!hasToken()) {
+      const err = new Error("NO_TOKEN");
+      err.code = "NO_TOKEN";
+      throw err;
+    }
+    const url = new URL(`${CONFIG.BASE_URL}/${path}`);
+    url.searchParams.set("api_token", CONFIG.SPORTMONKS_API_TOKEN);
+    url.searchParams.set("timezone", CONFIG.TIMEZONE);
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) url.searchParams.set(k, v);
+    });
+
+    let res;
+    try {
+      res = await fetch(url.toString(), { headers: { Accept: "application/json" } });
+    } catch (networkErr) {
+      const err = new Error("NETWORK_ERROR");
+      err.code = "NETWORK_ERROR";
+      err.cause = networkErr;
+      throw err;
     }
 
-    if (finishedStates.includes(stateCode)) {
-        return "finished";
+    if (!res.ok) {
+      const err = new Error(`API_ERROR_${res.status}`);
+      err.code = "API_ERROR";
+      err.status = res.status;
+      try {
+        err.body = await res.json();
+      } catch (_) {
+        /* ignore body parse failure */
+      }
+      throw err;
     }
 
-    if (cancelledStates.includes(stateCode)) {
-        return "finished";
+    return res.json();
+  }
+
+  function mapFixtureToEvent(fixture, sportLabel) {
+    // Sportmonks football/basketball/etc fixture shape (v3):
+    // fixture.participants -> [{name, image_path, meta:{location}}]
+    // fixture.state -> {state, short_name} (when include=state is used)
+    // fixture.starting_at -> "YYYY-MM-DD HH:mm:ss" in requested timezone
+    const participants = fixture.participants || [];
+    const home = participants.find((p) => p.meta && p.meta.location === "home") || participants[0];
+    const away = participants.find((p) => p.meta && p.meta.location === "away") || participants[1];
+
+    const rawState =
+      (fixture.state && (fixture.state.state || fixture.state.short_name)) ||
+      fixture.status ||
+      null;
+
+    return {
+      id: fixture.id,
+      sport: sportLabel,
+      tournament: (fixture.league && fixture.league.name) || fixture.name || "—",
+      teamHome: {
+        name: home ? home.name : "TBD",
+        logo: home ? home.image_path : null,
+      },
+      teamAway: {
+        name: away ? away.name : "TBD",
+        logo: away ? away.image_path : null,
+      },
+      startingAt: fixture.starting_at || null,
+      status: normalizeStatus(rawState),
+      rawState,
+    };
+  }
+
+  /**
+   * Fetch today's fixtures for one sport key ("cricket", "football",
+   * "basketball", "tennis", "fifa"). "wwe" always resolves to an
+   * unsupported result since Sportmonks has no such data.
+   */
+  async function fetchEvents(sportKey) {
+    const sport = SPORTS[sportKey];
+    if (!sport) throw new Error(`Unknown sport: ${sportKey}`);
+
+    if (sport.unsupported) {
+      const err = new Error("SPORT_UNSUPPORTED");
+      err.code = "SPORT_UNSUPPORTED";
+      throw err;
     }
 
-    // Everything else = Upcoming
-    return "upcoming";
-}
+    const date = todayInTimezone();
+    // include=participants;state;league gives us teams, live state, and competition name
+    const data = await apiGet(`${sport.path}/fixtures/date/${date}`, {
+      include: "participants;state;league",
+    });
 
-    // ==========================================
-    // TIME FORMAT
-    // ==========================================
+    let fixtures = Array.isArray(data.data) ? data.data : [];
 
-    formatTime(dateString) {
-
-        if (!dateString) {
-            return "TBD";
-        }
-
-
-        const date =
-            new Date(dateString);
-
-
-        if (isNaN(date.getTime())) {
-            return "TBD";
-        }
-
-
-        return new Intl.DateTimeFormat(
-            "en-GB",
-            {
-                timeZone: this.timezone,
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        ).format(date);
+    if (sport.fifaOnly) {
+      fixtures = fixtures.filter((f) => {
+        const leagueName = (f.league && f.league.name) || "";
+        return /fifa|world cup/i.test(leagueName);
+      });
     }
 
-
-    // ==========================================
-    // TEAM LOGO
-    // ==========================================
-
-    makeTeamLogo(imagePath, fallback) {
-
-        if (!imagePath) {
-            return fallback;
-        }
-
-
-        const safeUrl =
-            String(imagePath)
-                .replace(/"/g, "&quot;");
-
-
-        return `
-            <img
-                src="${safeUrl}"
-                alt=""
-                loading="lazy"
-                style="
-                    width:100%;
-                    height:100%;
-                    border-radius:50%;
-                    object-fit:cover;
-                "
-            >
-        `;
-    }
-
-
-    // ==========================================
-    // FOOTBALL LIVE
-    // ==========================================
-
-    async fetchFootballLive() {
-
-        const data =
-            await this.request(
-                "/football/livescores" +
-                "?include=participants;league;state",
-                "Football Live"
-            );
-
-
-        return this.normalizeFootballData(
-            data
-        );
-    }
-
-
-    // ==========================================
-    // FOOTBALL TODAY
-    // ==========================================
-
-    async fetchFootballToday() {
-
-        const today =
-            this.getDhakaDate();
-
-
-        console.log(
-            "HighFy TV Bangladesh Date:",
-            today
-        );
-
-
-        const data =
-            await this.request(
-                `/football/fixtures/date/${today}` +
-                "?include=participants;league;state" +
-                `&timezone=${encodeURIComponent(
-                    this.timezone
-                )}`,
-                "Football Today"
-            );
-
-
-        return this.normalizeFootballData(
-            data
-        );
-    }
-
-
-    // ==========================================
-    // CRICKET TODAY
-    // ==========================================
-
-    async fetchCricketToday() {
-
-        const today =
-            this.getDhakaDate();
-
-
-        const data =
-            await this.request(
-                `/cricket/fixtures/date/${today}` +
-                "?include=localteam;visitorteam;league;state" +
-                `&timezone=${encodeURIComponent(
-                    this.timezone
-                )}`,
-                "Cricket Today"
-            );
-
-
-        return this.normalizeCricketData(
-            data
-        );
-    }
-
-
-    // ==========================================
-    // FOOTBALL NORMALIZE
-    // ==========================================
-
-    normalizeFootballData(rawData) {
-
-        if (!Array.isArray(rawData)) {
-            return [];
-        }
-
-
-        return rawData.map(item => {
-
-            const participants =
-                Array.isArray(
-                    item.participants
-                )
-                    ? item.participants
-                    : [];
-
-
-            const team1 =
-                participants[0] || {};
-
-
-            const team2 =
-                participants[1] || {};
-
-
-            const status =
-                this.calculateStatus(
-                    item,
-                    "Football"
-                );
-
-
-            const time =
-                this.formatTime(
-                    item.starting_at
-                );
-
-
-            return {
-
-                id:
-                    `sm-fb-${item.id}`,
-
-                sport:
-                    "Football",
-
-                sportIcon:
-                    "⚽",
-
-                tournament:
-                    item.league?.name ||
-                    "Football",
-
-                team1:
-                    team1.name ||
-                    "Home Team",
-
-                team1Flag:
-                    this.makeTeamLogo(
-                        team1.image_path,
-                        "⚽"
-                    ),
-
-                team2:
-                    team2.name ||
-                    "Away Team",
-
-                team2Flag:
-                    this.makeTeamLogo(
-                        team2.image_path,
-                        "⚽"
-                    ),
-
-                status:
-                    status,
-
-                timeOrTimer:
-                    status === "live"
-                        ? (
-                            item.minute
-                                ? `${item.minute}'`
-                                : "LIVE"
-                        )
-                        : time,
-
-                statusText:
-                    status === "live"
-                        ? "LIVE NOW"
-                        : status === "finished"
-                            ? "Full Time"
-                            : `Starts at ${time}`,
-
-                isHot:
-                    status === "live",
-
-                startingAt:
-                    item.starting_at || null,
-
-                streamUrls:
-                    item.stream_urls || []
-
-            };
-
-        });
-    }
-
-
-    // ==========================================
-    // CRICKET NORMALIZE
-    // ==========================================
-
-    normalizeCricketData(rawData) {
-
-        if (!Array.isArray(rawData)) {
-            return [];
-        }
-
-
-        return rawData.map(item => {
-
-            const team1 =
-                item.localteam ||
-                item.local_team ||
-                {};
-
-
-            const team2 =
-                item.visitorteam ||
-                item.visitor_team ||
-                {};
-
-
-            const status =
-                this.calculateStatus(
-                    item,
-                    "Cricket"
-                );
-
-
-            const time =
-                this.formatTime(
-                    item.starting_at
-                );
-
-
-            return {
-
-                id:
-                    `sm-cr-${item.id}`,
-
-                sport:
-                    "Cricket",
-
-                sportIcon:
-                    "🏏",
-
-                tournament:
-                    item.league?.name ||
-                    "Cricket",
-
-                team1:
-                    team1.name ||
-                    "Team A",
-
-                team1Flag:
-                    this.makeTeamLogo(
-                        team1.image_path,
-                        "🏏"
-                    ),
-
-                team2:
-                    team2.name ||
-                    "Team B",
-
-                team2Flag:
-                    this.makeTeamLogo(
-                        team2.image_path,
-                        "🏏"
-                    ),
-
-                status:
-                    status,
-
-                timeOrTimer:
-                    status === "live"
-                        ? "LIVE"
-                        : time,
-
-                statusText:
-                    status === "live"
-                        ? "LIVE NOW"
-                        : status === "finished"
-                            ? "Match Ended"
-                            : `Starts at ${time}`,
-
-                isHot:
-                    status === "live",
-
-                startingAt:
-                    item.starting_at || null,
-
-                streamUrls:
-                    item.stream_urls || []
-
-            };
-
-        });
-    }
-
-
-    // ==========================================
-    // REMOVE DUPLICATES
-    // ==========================================
-
-    removeDuplicates(events) {
-
-        const map =
-            new Map();
-
-
-        events.forEach(event => {
-
-            if (!event || !event.id) {
-                return;
-            }
-
-
-            map.set(
-                String(event.id),
-                event
-            );
-
-        });
-
-
-        return Array.from(
-            map.values()
-        );
-    }
-
-
-    // ==========================================
-    // SORT EVENTS
-    // ==========================================
-
-    sortEvents(events) {
-
-        return events.sort(
-            (a, b) => {
-
-                const priority = {
-                    live: 0,
-                    upcoming: 1,
-                    finished: 2
-                };
-
-
-                const pA =
-                    priority[a.status] ?? 9;
-
-                const pB =
-                    priority[b.status] ?? 9;
-
-
-                if (pA !== pB) {
-                    return pA - pB;
-                }
-
-
-                const timeA =
-                    a.startingAt
-                        ? new Date(
-                            a.startingAt
-                        ).getTime()
-                        : Infinity;
-
-
-                const timeB =
-                    b.startingAt
-                        ? new Date(
-                            b.startingAt
-                        ).getTime()
-                        : Infinity;
-
-
-                return timeA - timeB;
-            }
-        );
-    }
-
-
-    // ==========================================
-    // MASTER ENGINE
-    // ==========================================
-
-    async getAllEvents() {
-
-        if (!this.hasToken()) {
-
-            console.warn(
-                "HighFy TV: Sportmonks Token missing."
-            );
-
-            return [];
-        }
-
-
-        console.log(
-            "================================"
-        );
-
-        console.log(
-            "HighFy TV Sportmonks Refresh"
-        );
-
-        console.log(
-            "Bangladesh Date:",
-            this.getDhakaDate()
-        );
-
-        console.log(
-            "================================"
-        );
-
-
-        const results =
-            await Promise.allSettled([
-
-                this.fetchFootballLive(),
-
-                this.fetchFootballToday(),
-
-                this.fetchCricketToday()
-
-            ]);
-
-
-        const footballLive =
-            results[0].status === "fulfilled"
-                ? results[0].value
-                : [];
-
-
-        const footballToday =
-            results[1].status === "fulfilled"
-                ? results[1].value
-                : [];
-
-
-        const cricketToday =
-            results[2].status === "fulfilled"
-                ? results[2].value
-                : [];
-
-
-        console.log(
-            "Football Live:",
-            footballLive.length
-        );
-
-        console.log(
-            "Football Today:",
-            footballToday.length
-        );
-
-        console.log(
-            "Cricket Today:",
-            cricketToday.length
-        );
-
-
-        const combined = [
-
-            ...footballLive,
-
-            ...footballToday,
-
-            ...cricketToday
-
-        ];
-
-
-        const unique =
-            this.removeDuplicates(
-                combined
-            );
-
-
-        const sorted =
-            this.sortEvents(
-                unique
-            );
-
-
-        console.log(
-            "HighFy TV Total Events:",
-            sorted.length
-        );
-
-
-        console.log(
-            "Live:",
-            sorted.filter(
-                x => x.status === "live"
-            ).length
-        );
-
-
-        console.log(
-            "Upcoming:",
-            sorted.filter(
-                x => x.status === "upcoming"
-            ).length
-        );
-
-
-        console.log(
-            "Finished:",
-            sorted.filter(
-                x => x.status === "finished"
-            ).length
-        );
-
-
-        return sorted;
-    }
-}
-
-
-// ==========================================
-// GLOBAL EXPORT
-// ==========================================
-
-window.sportmonksEngine =
-    new SportmonksService();
-
-
-console.log(
-    "HighFy TV Sportmonks Engine Ready"
-);
-setTimeout(() => {
-    console.log("====== HIGHFY TV EVENTS DEBUG ======");
-    console.table(
-        eventsData.map(e => ({
-            id: e.id,
-            sport: e.sport,
-            team1: e.team1,
-            team2: e.team2,
-            status: e.status,
-            time: e.timeOrTimer,
-            startingAt: e.startingAt
-        }))
-    );
-}, 5000);
+    return fixtures.map((f) => mapFixtureToEvent(f, sport.label));
+  }
+
+  /**
+   * Fetches events across all requested sport keys and merges them,
+   * tagging each with which sport it belongs to. Individual sport
+   * failures don't take down the whole call — they're reported
+   * per-sport so the UI can show partial data plus an error note.
+   */
+  async function fetchAllEvents(sportKeys) {
+    const results = await Promise.allSettled(sportKeys.map((k) => fetchEvents(k)));
+    const events = [];
+    const errors = [];
+
+    results.forEach((r, i) => {
+      const key = sportKeys[i];
+      if (r.status === "fulfilled") {
+        events.push(...r.value);
+      } else {
+        errors.push({ sport: key, error: r.reason });
+      }
+    });
+
+    return { events, errors };
+  }
+
+  return {
+    SPORTS,
+    hasToken,
+    normalizeStatus,
+    fetchEvents,
+    fetchAllEvents,
+  };
+})();
