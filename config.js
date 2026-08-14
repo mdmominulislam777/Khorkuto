@@ -10,7 +10,7 @@
 
 const CONFIG = {
   // Paste your Sportmonks API token here. Leave empty to disable live sports.
-  SPORTMONKS_API_TOKEN: "",
+  SPORTMONKS_API_TOKEN: "https://api.sportmonks.com/v3/football/teams/85?api_token=YOUR_TOKEN&include=upcoming.participants;upcoming.league",
 
   // Sportmonks base URL (football endpoint shown; see sportmonks.js for
   // how other sports are mapped). Change only if Sportmonks changes their API.
